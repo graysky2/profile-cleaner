@@ -5,6 +5,10 @@ Packaged for Arch Linux in the AUR: https://aur.archlinux.org/packages.php?ID=62
 
 Sample output and results using an "uncleaned" firefox profile:
 
+Size before: 154.17 Mbytes
+Size after:  99.11 Mbytes
+Recovered:   55.06 Mbytes
+
 $ profile-cleaner f
 /home/facade/.mozilla/firefox/zee52krz.default/cookies.sqlite reduced by .87 Mbytes
 /home/facade/.mozilla/firefox/zee52krz.default/signons.sqlite reduced by .41 Mbytes
