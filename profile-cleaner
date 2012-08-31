@@ -2,10 +2,15 @@
 
 do_chrome() {
 	prepath=$HOME/.config/chromium
-	if [ -h "$prepath" ]; then
+	if [[ -h "$prepath" ]]; then
 		path=$(readlink $prepath)
 	else
 		path="$prepath"
+	fi
+
+	if [[ ! -d "$path" ]]; then
+		echo "Error: no profile directory for chrome/chromium found."
+		exit 0
 	fi
 
 	for i in History Archived Safe; do
