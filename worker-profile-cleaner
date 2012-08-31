@@ -1,0 +1,7 @@
+#!/bin/bash
+
+bsize=$(ls -l "$1" | awk {'print $5'})
+sqlite3 "$1" vacuum ; sqlite3 "$1" reindex
+asize=$(ls -l "$1" | awk {'print $5'})
+dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
+echo "$1" reduced by $dsize Mbytes

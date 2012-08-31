@@ -1,0 +1,46 @@
+#!/bin/bash
+
+do_chrome() {
+	prepath=$HOME/.config/chromium
+	if [ -h "$prepath" ]; then
+		path=$(readlink $prepath)
+	else
+		path="$prepath"
+	fi
+
+	for i in History Archived Safe; do
+		find ${path} -type f -name "History*" -print0 | xargs -0 -n 1 /usr/bin/worker-profile-cleaner
+	done
+}
+
+do_firefox() {
+	path=$HOME/.mozilla/firefox
+	if [[ ! -f $path/profiles.ini ]]; then
+		echo "Error: cannot locate $path/profiles.ini to determine names of profiles."
+		exit 0
+	fi
+
+	# read each profile into the work array
+	work=( $(grep Path $path/profiles.ini | sed 's/Path=//') )
+
+	for i in "${work[@]}"; do
+		find ${path} -name '*.sqlite' -print0 | xargs -0 -n 1 /usr/bin/worker-profile-cleaner
+	done
+}
+
+case "$1" in
+	c)
+		do_chrome
+		exit 0
+		;;
+	f)
+		do_firefox
+		exit 0
+		;;
+	*)
+		echo "Usage $0 {c|f}"
+		echo "c) chrome/chromium"
+		echo "f) firefox"
+		exit 0
+		;;
+esac
