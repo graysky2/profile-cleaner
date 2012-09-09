@@ -77,10 +77,10 @@ case "$1" in
 		exit 0
 		;;
 	*)
-		echo "Usage $0 {c|f}"
-		echo "c) chromium"
-        echo "gc) chrome"
-		echo "f) firefox"
+		echo "Usage $0 {c|f|gc}"
+		echo " c) chromium"
+		echo " f) firefox"
+    echo "gc) google chrome"
 		exit 0
 		;;
 esac
