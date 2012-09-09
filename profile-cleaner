@@ -9,7 +9,7 @@ do_clean() {
 	echo "$1" reduced by $dsize Mbytes
 }
 
-do_chrome() {
+do_chromium() {
 	prepath=$HOME/.config/chromium
 	if [[ -h "$prepath" ]]; then
 		path=$(readlink $prepath)
@@ -18,7 +18,25 @@ do_chrome() {
 	fi
 
 	if [[ ! -d "$path" ]]; then
-		echo "Error: no profile directory for chrome/chromium found."
+		echo "Error: no profile directory for chromium found."
+		exit 0
+	fi
+
+	for i in History Archived Safe; do
+		find ${path} -type f -name "$i*" -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
+	done
+}
+
+do_chrome() {
+	prepath=$HOME/.config/google-chrome
+	if [[ -h "$prepath" ]]; then
+		path=$(readlink $prepath)
+	else
+		path="$prepath"
+	fi
+
+	if [[ ! -d "$path" ]]; then
+		echo "Error: no profile directory for chrome found."
 		exit 0
 	fi
 
@@ -46,16 +64,22 @@ export -f do_clean
 
 case "$1" in
 	c)
-		do_chrome
+		do_chromium
 		exit 0
 		;;
+
+	gc)
+		do_chrome
+		exit 0
+		;;	
 	f)
 		do_firefox
 		exit 0
 		;;
 	*)
 		echo "Usage $0 {c|f}"
-		echo "c) chrome/chromium"
+		echo "c) chromium"
+        echo "gc) chrome"
 		echo "f) firefox"
 		exit 0
 		;;
