@@ -23,7 +23,7 @@ do_chromium() {
 	fi
 
 	for i in History Archived Safe; do
-		find ${path} -type f -name "$i*" -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
+		find ${path} -maxdepth 2 -type f -name "$i*" -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
 	done
 }
 
@@ -41,7 +41,7 @@ do_chrome() {
 	fi
 
 	for i in History Archived Safe; do
-		find ${path} -type f -name "$i*" -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
+		find ${path} -maxdepth 2 -type f -name "$i*" -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
 	done
 }
 
@@ -56,7 +56,7 @@ do_firefox() {
 	work=( $(grep Path $path/profiles.ini | sed 's/Path=//') )
 
 	for i in "${work[@]}"; do
-		find ${path} -name '*.sqlite' -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
+		find ${path} -maxdepth 2 -name '*.sqlite' -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
 	done
 }
 
