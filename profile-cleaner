@@ -69,6 +69,10 @@ do_conkeror() {
 	do_xulbased
 }
 
+do_thunderbird() {
+	path=$HOME/.thunderbird
+	do_xulbased
+}
 
 export -f do_clean
 
@@ -90,12 +94,17 @@ case "$1" in
 		do_conkeror
 		exit 0
 		;;
+	t)
+		do_thunderbird
+		exit 0
+		;;
 	*)
-		echo "Usage $0 {c|ck|f|gc}"
+		echo "Usage $0 {c|ck|f|gc|t}"
 		echo " c) chromium"
 		echo "ck) conkeror"
 		echo " f) firefox"
 		echo "gc) google chrome"
+		echo " t) thunderbird"
 		exit 0
 		;;
 esac
