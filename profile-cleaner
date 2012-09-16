@@ -45,8 +45,7 @@ do_chrome() {
 	done
 }
 
-do_firefox() {
-	path=$HOME/.mozilla/firefox
+do_xulbased() {
 	if [[ ! -f $path/profiles.ini ]]; then
 		echo "Error: cannot locate $path/profiles.ini to determine names of profiles."
 		exit 0
@@ -59,6 +58,17 @@ do_firefox() {
 		find ${path} -maxdepth 2 -name '*.sqlite' -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
 	done
 }
+
+do_firefox() {
+	path=$HOME/.mozilla/firefox
+	do_xulbased
+}
+
+do_conkeror() {
+	path=$HOME/.conkeror.mozdev.org/conkeror
+	do_xulbased
+}
+
 
 export -f do_clean
 
@@ -76,11 +86,16 @@ case "$1" in
 		do_firefox
 		exit 0
 		;;
+	ck)
+		do_conkeror
+		exit 0
+		;;
 	*)
-		echo "Usage $0 {c|f|gc}"
+		echo "Usage $0 {c|ck|f|gc}"
 		echo " c) chromium"
+		echo "ck) conkeror"
 		echo " f) firefox"
-    echo "gc) google chrome"
+		echo "gc) google chrome"
 		exit 0
 		;;
 esac
