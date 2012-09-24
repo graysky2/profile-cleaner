@@ -67,7 +67,11 @@ do_xulbased() {
 	work=( $(grep Path $path/profiles.ini | sed -e 's/Path=//' -e 's/\r//') )
 
 	for i in "${work[@]}"; do
-		find ${path}/$i -maxdepth 2 -name '*.sqlite' -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
+		if [ ! -d ${path}/"$i" ]; then
+			find $i -maxdepth 2 -name '*.sqlite' -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
+	else
+			find ${path}/$i -maxdepth 2 -name '*.sqlite' -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
+		fi
 	done
 }
 
