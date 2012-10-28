@@ -85,6 +85,11 @@ do_conkeror() {
 	do_xulbased
 }
 
+do_heftig-aurora() {
+	prepath=$HOME/.mozilla/aurora
+	do_xulbased
+}
+
 do_thunderbird() {
 	prepath=$HOME/.thunderbird
 	do_xulbased
@@ -110,6 +115,10 @@ case "$1" in
 		do_conkeror
 		exit 0
 		;;
+	h)
+		do_heftig-aurora
+		exit 0
+		;;
 	t)
 		do_thunderbird
 		exit 0
@@ -120,6 +129,7 @@ case "$1" in
 		echo "ck) conkeror"
 		echo " f) firefox"
 		echo "gc) google chrome"
+		echo " h) heftig's aurora"
 		echo " t) thunderbird"
 		exit 0
 		;;
