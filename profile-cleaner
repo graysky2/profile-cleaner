@@ -80,11 +80,6 @@ do_firefox() {
 	do_xulbased
 }
 
-do_aurora() {
-	prepath=$HOME/.mozilla/aurora
-	do_xulbased
-}
-
 do_conkeror() {
 	prepath=$HOME/.conkeror.mozdev.org/conkeror
 	do_xulbased
@@ -107,17 +102,12 @@ case "$1" in
 		do_chromium
 		exit 0
 		;;
-
 	gc)
 		do_chrome
 		exit 0
 		;;	
 	f)
 		do_firefox
-		exit 0
-		;;
-	a)
-		do_aurora
 		exit 0
 		;;
 	ck)
@@ -134,7 +124,6 @@ case "$1" in
 		;;
 	*)
 		echo "Usage $0 {a|c|ck|f|gc|t}"
-		echo " a) aurora"
 		echo " c) chromium"
 		echo "ck) conkeror"
 		echo " f) firefox"
