@@ -1,6 +1,6 @@
 Use profile-cleaner to reduce the size of browser profiles by organizing their sqlite databases using sqlite3's vacuum and reindex functions.
 
-Packaged for Arch Linux in the AUR: https://aur.archlinux.org/packages.php?ID=62408
+Packaged for Arch Linux in the AUR: https://aur.archlinux.org/packages/profile-cleaner
 
 Sample output and results using an "uncleaned" firefox profile:
 
