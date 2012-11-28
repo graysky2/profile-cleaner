@@ -43,6 +43,7 @@ Here is a contrived example syncing 6 firefox profiles comparing the classical v
 * After cleaning there is a total of 213 M in the 6 "clean" profiles.
 
 new 4.07s user 0.42s system 318% cpu 1.411 total
+
 old 8.15s user 0.43s system 95% cpu 8.942 total
 
 Your mileage may vary.
