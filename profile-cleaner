@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ -z $(which parallel) ]]; then
+	echo "GNU Parallel is now a requirement of this script."
+	echo "Please install it and try again."
+	exit 1
+fi
+
 do_clean() {
 	bsize=$(ls -l "$1" | awk {'print $5'})
 	sqlite3 "$1" vacuum &>/dev/null
@@ -11,68 +17,49 @@ do_clean() {
 
 do_chromium() {
 	prepath=$HOME/.config/chromium
-	if [[ -h "$prepath" ]]; then
-		path=$(readlink $prepath)
-	else
-		path="$prepath"
-	fi
-
-	if [[ ! -d "$path" ]]; then
-		echo "Error: no profile directory for chromium found."
-		exit 0
-	fi
-
-	for i in History Archived Safe; do
-		find ${path} -maxdepth 2 -type f -name "$i*" -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
-	done
+	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
+	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for chromium found." &&	exit 1
+	find ${profilepath} -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel do_clean 2>/dev/null
 }
 
 do_chrome() {
 	prepath=$HOME/.config/google-chrome
-	if [[ -h "$prepath" ]]; then
-		path=$(readlink $prepath)
-	else
-		path="$prepath"
-	fi
-
-	if [[ ! -d "$path" ]]; then
-		echo "Error: no profile directory for chrome found."
-		exit 0
-	fi
-
-	for i in History Archived Safe; do
-		find ${path} -maxdepth 2 -type f -name "$i*" -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
-	done
+	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
+	[[ ! -d "$profilepath" ]] && echo "Error: no profile directory for chrome found." &&	exit 1
+	find ${profilepath} -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel do_clean 2>/dev/null
 }
 
 do_xulbased() {
-	# prepath should be defined in the do_whatever function
 	if [[ -h "$prepath" ]]; then
-		path=$(readlink $prepath)
+		profilepath=$(readlink $prepath)
 	else
-		path="$prepath"
+		profilepath="$prepath"
 	fi
 
-	if [[ ! -d "$path" ]]; then
-		echo "Error: cannot locate $path"
-		exit 0
+	if [[ ! -d "$profilepath" ]]; then
+		echo "Error: cannot locate $profilepath"
+		exit 1
 	fi
 
-	if [[ ! -f $path/profiles.ini ]]; then
-		echo "Error: cannot locate $path/profiles.ini to determine names of profiles."
-		exit 0
-	fi
+	[[ ! -f $profilepath/profiles.ini ]] && echo "Error: cannot locate $profilepath/profiles.ini to determine names of profiles." && 	exit 1
 
-	# read each profile into the work array
-	work=( $(grep Path $path/profiles.ini | sed -e 's/Path=//' -e 's/\r//') )
+	# workArr is a raw list of profiles
+	workArr=( $(grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//') )	# read each profile into the work array
 
-	for i in "${work[@]}"; do
-		if [ ! -d ${path}/"$i" ]; then
-			find $i -maxdepth 2 -name '*.sqlite' -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
-	else
-			find ${path}/$i -maxdepth 2 -name '*.sqlite' -print0 | xargs -0 -n 1 -I {} bash -c "do_clean {} 2>/dev/null"
+	# FinalArr is a processed list of profiles
+	# they are formated to abs paths since some are rel and some are abs
+	index=0
+	for i in "${workArr[@]}"; do
+		if [ ! -d ${profilepath}/"$i" ]; then
+			FinalArr[index]="$i"
+		else
+			FinalArr[index]="$profilepath/$i"
 		fi
+		index=$index+1
 	done
+
+	# here is the actual worker
+	find -L ${FinalArr[@]} -maxdepth 2 -name '*.sqlite' | SHELL=/bin/bash parallel do_clean 2>/dev/null	
 }
 
 do_firefox() {
@@ -86,8 +73,8 @@ do_conkeror() {
 }
 
 do_heftig-aurora() {
-	prepath=$HOME/.mozilla/aurora
-	do_xulbased
+prepath=$HOME/.mozilla/aurora
+do_xulbased
 }
 
 do_thunderbird() {
@@ -123,7 +110,10 @@ case "$1" in
 		exit 0
 		;;
 	*)
-		echo "Usage $0 {a|c|ck|f|gc|t}"
+		echo -en "      \E[31m::USAGE::"
+		tput sgr0 
+		echo
+		echo "$0 {a|c|ck|f|gc|t}"
 		echo " c) chromium"
 		echo "ck) conkeror"
 		echo " f) firefox"

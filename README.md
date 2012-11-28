@@ -1,7 +1,13 @@
-#Profile-cleaner
+# Profile-cleaner
 Use profile-cleaner to reduce the size of browser profiles by organizing their sqlite databases using sqlite3's vacuum and reindex functions.
 
-Sample output and results using an "uncleaned" firefox profile:
+## Dependencies
+* bc
+* findutils
+* sqlite
+* parallel (new dependency)
+
+## Sample Output and Results Using an "Uncleaned" Firefox Profile:
 
 	Size before: 154.17 Mbytes
 	Size after:  99.11 Mbytes
