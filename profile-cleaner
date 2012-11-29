@@ -1,31 +1,30 @@
 #!/bin/bash
 
+VERS="1.82"
+
 if [[ -z $(which parallel) ]]; then
 	echo "GNU Parallel is now a requirement of this script."
 	echo "Please install it and try again."
 	exit 1
 fi
 
+echo -en "\E[31mprofile-cleaner v$VERS"
+tput sgr0
+echo
+echo
+
 do_clean() {
 	bsize=$(ls -l "$1" | awk {'print $5'})
-	sqlite3 "$1" vacuum &>/dev/null
-	sqlite3 "$1" reindex &>/dev/null
+	sqlite3 "$1" vacuum
+	sqlite3 "$1" reindex
 	asize=$(ls -l "$1" | awk {'print $5'})
 	dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
 	echo "$1" reduced by $dsize Mbytes
 }
 
-do_chromium() {
-	prepath=$HOME/.config/chromium
+do_chromebased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for chromium found." &&	exit 1
-	find ${profilepath} -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel do_clean 2>/dev/null
-}
-
-do_chrome() {
-	prepath=$HOME/.config/google-chrome
-	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] && echo "Error: no profile directory for chrome found." &&	exit 1
+	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory found." &&	exit 1
 	find ${profilepath} -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel do_clean 2>/dev/null
 }
 
@@ -62,63 +61,58 @@ do_xulbased() {
 	find -L ${FinalArr[@]} -maxdepth 2 -name '*.sqlite' | SHELL=/bin/bash parallel do_clean 2>/dev/null	
 }
 
-do_firefox() {
-	prepath=$HOME/.mozilla/firefox
-	do_xulbased
-}
-
-do_conkeror() {
-	prepath=$HOME/.conkeror.mozdev.org/conkeror
-	do_xulbased
-}
-
-do_heftig-aurora() {
-	prepath=$HOME/.mozilla/aurora
-	do_xulbased
-}
-
-do_thunderbird() {
-	prepath=$HOME/.thunderbird
-	do_xulbased
+do_dbbased() {
+	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
+	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for midori found." &&	exit 1
+	find ${profilepath} -maxdepth 2 -type f -name '*.db' | SHELL=/bin/bash parallel do_clean 2>/dev/null
 }
 
 export -f do_clean
 
 case "$1" in
 	c)
-		do_chromium
+		prepath=$XDG_CONFIG_HOME/chromium
+		do_chromebased
 		exit 0
 		;;
 	gc)
-		do_chrome
+		prepath=$XDG_CONFIG_HOME/google-chrome
+		do_chromebased
 		exit 0
 		;;	
 	f)
-		do_firefox
+		prepath=$HOME/.mozilla/firefox
+		do_xulbased
 		exit 0
 		;;
 	ck)
-		do_conkeror
+		prepath=$HOME/.conkeror.mozdev.org/conkeror
+		do_xulbased
 		exit 0
 		;;
 	h)
-		do_heftig-aurora
+		prepath=$HOME/.mozilla/aurora
+		do_xulbased
 		exit 0
 		;;
 	t)
-		do_thunderbird
+		prepath=$HOME/.thunderbird
+		do_xulbased
+		exit 0
+		;;
+	m)
+		prepath=$XDG_CONFIG_HOME/midori
+		do_dbbased
 		exit 0
 		;;
 	*)
-		echo -en "      \E[31m::USAGE::"
-		tput sgr0 
-		echo
 		echo "$0 {a|c|ck|f|gc|t}"
 		echo " c) chromium"
 		echo "ck) conkeror"
 		echo " f) firefox"
 		echo "gc) google chrome"
 		echo " h) heftig's aurora"
+		echo " m) midori"
 		echo " t) thunderbird"
 		exit 0
 		;;
