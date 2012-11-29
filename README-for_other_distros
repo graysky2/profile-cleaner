@@ -1,11 +1,11 @@
 NAME
-profile-cleaner - Reduce the size of browser profiles and of email databases by organizing their sqlite databases using sqlite3's vacuum and reindex functions.
+profile-cleaner - Reduce the size of browser and some email program's profiles by organizing their sqlite databases using sqlite3's vacuum and reindex functions.
 
 SYNOPSIS
 profile-cleaner [option]
 
 DESCRIPTION
-Profile-cleaner is a very simple shell script that will invoke sqlite3 to vacuum and reindex databases belonging to supported browsers and email clients. It is compatible with profile-sync-daemon so users need not stop psd before cleaning a profile. In fact, profiles will clean much faster when they are synced to tmpfs via psd.
+Profile-cleaner is a very simple shell script that will invoke sqlite3 to vacuum and reindex databases belonging to supported browsers and email clients. It is compatible with profile-sync-daemon so users need not stop psd before calling profile-cleaner. In fact, profiles will clean much faster when they are synced to tmpfs via psd.
 
 OPTIONS
 	c   Clean chromium's profile.
