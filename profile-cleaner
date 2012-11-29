@@ -44,7 +44,7 @@ do_xulbased() {
 	[[ ! -f $profilepath/profiles.ini ]] && echo "Error: cannot locate $profilepath/profiles.ini to determine names of profiles." && 	exit 1
 
 	# workArr is a raw list of profiles
-	workArr=( $(grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//') )	# read each profile into the work array
+	workArr=( $(grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//' -e 's/\r//') )	# read each profile into the work array
 
 	# FinalArr is a processed list of profiles
 	# they are formated to abs paths since some are rel and some are abs
@@ -73,8 +73,8 @@ do_conkeror() {
 }
 
 do_heftig-aurora() {
-prepath=$HOME/.mozilla/aurora
-do_xulbased
+	prepath=$HOME/.mozilla/aurora
+	do_xulbased
 }
 
 do_thunderbird() {
