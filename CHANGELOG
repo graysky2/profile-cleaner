@@ -1,0 +1,51 @@
+v1.82
+29-Nov-2012
+Streamlined code and added support for midori.
+
+v1.81
+29-Nov-2012
+Fixed pesky \r from getting into work array, again.
+
+v1.80
+28-Nov-2012
+Updated to be compatiable with profile-sync-deamon v5 series.
+Updated to use parallel rather than for loops.  MUCH faster with multiple profiles.
+
+v1.66
+28-Oct-2012
+Removed reducdant functions (aurora and heft aurora).
+
+v1.65
+28-Oct-2012
+Added heftig's aurora support (avrelaun).
+
+v1.6
+24-Sep-2012
+ISRelative work-around for users with relative profiles.
+
+v1.5
+16-Sep-2012
+Fixed pesky \r from getting into work array.
+
+v1.4
+16-Sep-2012
+Added support for conkeror, and thunderbird by reusing the firefox cleaning function (junag).
+
+v1.3
+15-Sep-2012
+Added maxdepth 2 switch to speed things up on profiles with lots of data.
+
+v1.2
+09-Sep-2012
+Added more description.
+Added proper support for Google Chrome profiles (MatejLach).
+
+v1.1
+31-Aug-2012
+Redirect to /dev/null for cleaner operation.
+Added check for chromium path.
+All in one file now.
+
+v1.0
+31-Aug-2012
+Initial public release.
