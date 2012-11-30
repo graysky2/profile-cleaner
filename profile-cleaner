@@ -1,6 +1,6 @@
 #!/bin/bash
-
-VERS="1.83"
+export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" RST="\e[00m"
+VERS="1.84"
 
 if [[ -z $(which parallel) ]]; then
 	echo "GNU Parallel is now a requirement of this script."
@@ -9,28 +9,28 @@ if [[ -z $(which parallel) ]]; then
 fi
 
 [[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
-
-echo -en "\E[31mprofile-cleaner v$VERS"
-tput sgr0
-echo
+echo -e "${RED}profile-cleaner v$VERS${RST}"
 echo
 
 do_clean() {
+	echo -en "${GRN} Cleaning${RST} ${1##*/}"
 	bsize=$(ls -l "$1" | awk {'print $5'})
 	sqlite3 "$1" vacuum
 	sqlite3 "$1" reindex
 	asize=$(ls -l "$1" | awk {'print $5'})
 	dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
-	echo "$1" reduced by $dsize Mbytes
+	#echo "$1" reduced by $dsize Mbytes
+	echo -e "$(tput cr)$(tput cuf 46) ${GRN}done${RST}  -${YLW}${dsize}${RST} Mbytes"
 	echo "$name,$dsize" >> /tmp/accounting.db
 }
 
 do_chromebased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for $name found." &&	exit 1
-	find "$profilepath" -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel do_clean 2>/dev/null
+	echo -e " ${RED}Cleaning profile for $name${RTS}"
+	find "$profilepath" -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
 	echo
-	echo "$name profile reduced by $(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc) Mbytes"
+	echo -e " ${BLD}Profile for $name was reduced by ${YLW}$(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${RST} ${BLD}Mbytes.${RTS}"
 	[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
 }
 
@@ -67,18 +67,21 @@ do_xulbased() {
 	done
 
 	# here is the actual worker
+	echo -e " ${RED}Cleaning profile for $name${RTS}"
 	find -L ${FinalArr[@]} -maxdepth 2 -name '*.sqlite' | SHELL=/bin/bash parallel do_clean 2>/dev/null	
 	echo
-	echo "$name profile(s) reduced by $(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc) Mbytes"
+	echo -e " ${BLD}Profile for $name was reduced by ${YLW}$(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${RST} ${BLD}Mbytes.${RTS}"
 	[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
 }
 
 do_dbbased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for $name found." &&	exit 1
+	echo -e " ${RED}Cleaning profile for $name${RTS}"
 	find ${profilepath} -maxdepth 2 -type f -name '*.db' | SHELL=/bin/bash parallel do_clean 2>/dev/null
 	echo
-	echo "$name profile reduced by $(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc) Mbytes"
+	echo -e " ${BLD}Profile for $name was reduced by ${YLW}$(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${RST} ${BLD}Mbytes.${RTS}"
+	[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
 }
 
 export -f do_clean
@@ -133,7 +136,7 @@ case "$1" in
 		exit 0
 		;;
 	*)
-		echo "$0 {a|c|ck|f|gc|t}"
+		echo -e "$0 ${GRN}{a|c|ck|f|gc|t}${RST}"
 		echo " c) Chromium"
 		echo "ck) Conkeror"
 		echo " f) Firefox"
