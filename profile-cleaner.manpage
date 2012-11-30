@@ -62,10 +62,8 @@ Google-chrome
 Heftig's version of Aurora (https://bbs.archlinux.org/viewtopic.php?id=117157)
 .IP \(bu 3
 Midori
-.SH SAMPLE OUTPUT AND RESULTS USING AN UNCLEAN FIREFOX PROFILE
-Size before: 154.17 Mbytes
-.PP
-Size after: 99.11 Mbytes
+.SH SAMPLE OUTPUT
+Sample output invoking the firefox \fIoption\fP (your mileage will vary).
 .RE
 .PP
 

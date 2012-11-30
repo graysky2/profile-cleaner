@@ -34,10 +34,8 @@ SUPPORTED BROWSERS AND EMAIL CLIENTS
 	o Heftig's version of Aurora (https://bbs.archlinux.org/viewtopic.php?id=117157)
 	o Midori
 
-SAMPLE OUTPUT AND RESULTS USING AN UNCLEAN FIREFOX PROFILE
-Size before: 154.17 Mbytes
-
-Size after: 99.11 Mbytes
+SAMPLE OUTPUT
+Sample output invoking the firefox option (your mileage will vary).
 
 
  $ profile-cleaner f
