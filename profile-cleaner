@@ -1,12 +1,14 @@
 #!/bin/bash
 
-VERS="1.82"
+VERS="1.83"
 
 if [[ -z $(which parallel) ]]; then
 	echo "GNU Parallel is now a requirement of this script."
 	echo "Please install it and try again."
 	exit 1
 fi
+
+[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
 
 echo -en "\E[31mprofile-cleaner v$VERS"
 tput sgr0
@@ -20,12 +22,16 @@ do_clean() {
 	asize=$(ls -l "$1" | awk {'print $5'})
 	dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
 	echo "$1" reduced by $dsize Mbytes
+	echo "$name,$dsize" >> /tmp/accounting.db
 }
 
 do_chromebased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory found." &&	exit 1
-	find ${profilepath} -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel do_clean 2>/dev/null
+	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for $name found." &&	exit 1
+	find "$profilepath" -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel do_clean 2>/dev/null
+	echo
+	echo "$name profile reduced by $(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc) Mbytes"
+	[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
 }
 
 do_xulbased() {
@@ -35,12 +41,15 @@ do_xulbased() {
 		profilepath="$prepath"
 	fi
 
+	[[ "$name" = "aurora" ]] && name="heftig aurora"
+
 	if [[ ! -d "$profilepath" ]]; then
 		echo "Error: cannot locate $profilepath"
+		echo "This is the default path for $name and where $0 expects to find it."
 		exit 1
 	fi
 
-	[[ ! -f $profilepath/profiles.ini ]] && echo "Error: cannot locate $profilepath/profiles.ini to determine names of profiles." && 	exit 1
+	[[ ! -f $profilepath/profiles.ini ]] && echo "Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name." && 	exit 1
 
 	# workArr is a raw list of profiles
 	workArr=( $(grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//' -e 's/\r//') )	# read each profile into the work array
@@ -59,61 +68,80 @@ do_xulbased() {
 
 	# here is the actual worker
 	find -L ${FinalArr[@]} -maxdepth 2 -name '*.sqlite' | SHELL=/bin/bash parallel do_clean 2>/dev/null	
+	echo
+	echo "$name profile(s) reduced by $(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc) Mbytes"
+	[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
 }
 
 do_dbbased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for midori found." &&	exit 1
+	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for $name found." &&	exit 1
 	find ${profilepath} -maxdepth 2 -type f -name '*.db' | SHELL=/bin/bash parallel do_clean 2>/dev/null
+	echo
+	echo "$name profile reduced by $(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc) Mbytes"
 }
 
 export -f do_clean
 
 case "$1" in
-	c)
-		prepath=$XDG_CONFIG_HOME/chromium
+	C|c)
+		name="chromium" ; export name
+		prepath=$XDG_CONFIG_HOME/$name
 		do_chromebased
 		exit 0
 		;;
-	gc)
-		prepath=$XDG_CONFIG_HOME/google-chrome
+	Gc|gC|GC|gc)
+		name="google-chrome" ; export name
+		prepath=$XDG_CONFIG_HOME/$name
 		do_chromebased
 		exit 0
 		;;	
-	f)
-		prepath=$HOME/.mozilla/firefox
+	F|f)
+		name="firefox"; export name
+		prepath=$HOME/.mozilla/$name
 		do_xulbased
 		exit 0
 		;;
-	ck)
-		prepath=$HOME/.conkeror.mozdev.org/conkeror
+	CK|cK|Ck|ck)
+		name="conkeror"; export name
+		prepath=$HOME/.conkeror.mozdev.org/$name
 		do_xulbased
 		exit 0
 		;;
-	h)
+	H|h)
+		name="heftig aurora"; export name
 		prepath=$HOME/.mozilla/aurora
 		do_xulbased
 		exit 0
 		;;
-	t)
-		prepath=$HOME/.thunderbird
+	T|t)
+		name="thunderbird"; export name
+		prepath=$HOME/.$name
 		do_xulbased
 		exit 0
 		;;
-	m)
-		prepath=$XDG_CONFIG_HOME/midori
+	M|m)
+		name="midori"; export name
+		prepath=$XDG_CONFIG_HOME/$name
+		do_dbbased
+		exit 0
+		;;
+	Q|q)
+		name="qupzilla"; export name
+		prepath=$HOME/.$name/profiles
 		do_dbbased
 		exit 0
 		;;
 	*)
 		echo "$0 {a|c|ck|f|gc|t}"
-		echo " c) chromium"
-		echo "ck) conkeror"
-		echo " f) firefox"
-		echo "gc) google chrome"
-		echo " h) heftig's aurora"
-		echo " m) midori"
-		echo " t) thunderbird"
+		echo " c) Chromium"
+		echo "ck) Conkeror"
+		echo " f) Firefox"
+		echo "gc) Google Chrome"
+		echo " h) Heftig's Aurora"
+		echo " m) Midori"
+		echo " t) Thunderbird"
+		echo " q) QupZilla"
 		exit 0
 		;;
 esac

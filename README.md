@@ -14,7 +14,6 @@ AUR Link: https://aur.archlinux.org/packages/profile-cleaner
 
 	Size before: 154.17 Mbytes
 	Size after:  99.11 Mbytes
-	Recovered:   55.06 Mbytes
 
 	$ profile-cleaner f
 	
@@ -32,6 +31,8 @@ AUR Link: https://aur.archlinux.org/packages/profile-cleaner
 	/home/facade/.mozilla/firefox/zee52krz.default/OfflineCache/index.sqlite reduced by 0 Mbytes
 	/home/facade/.mozilla/firefox/zee52krz.default/search.sqlite reduced by 0 Mbytes
 	/home/facade/.mozilla/firefox/zee52krz.default/places.sqlite reduced by 9.98 Mbytes
+
+	firefox profile reduced by 55.06 Mbytes
 
 ## Speed Comparison
 28-Nov-2012		Profile-cleaner has been rewritten to use GNU Parallel for processing.

@@ -39,8 +39,6 @@ Size before: 154.17 Mbytes
 
 Size after: 99.11 Mbytes
 
-Recovered: 55.06 Mbytes
-
 
  $ profile-cleaner f
  /home/facade/.mozilla/firefox/zee52krz.default/cookies.sqlite reduced by .87 Mbytes
@@ -58,6 +56,8 @@ Recovered: 55.06 Mbytes
  /home/facade/.mozilla/firefox/zee52krz.default/search.sqlite reduced by 0 Mbytes
  /home/facade/.mozilla/firefox/zee52krz.default/places.sqlite reduced by 9.98 Mbytes
 
+ firefox profile reduced by 55.06 Mbytes
+
 CONTRIBUTE
 Should you wish to contribute to this code, please fork and send a pull request. Source is freely available on github: https://github.com/graysky2/profile-cleaner
 
@@ -68,4 +68,4 @@ AUTHOR
 graysky (graysky AT archlinux DOT us)
 
 SEE ALSO
-profile-sync-deamon (8)
+profile-sync-deamon (1)
