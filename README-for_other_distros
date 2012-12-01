@@ -8,6 +8,8 @@ DESCRIPTION
 Profile-cleaner is a very simple shell script that will invoke sqlite3 to vacuum and reindex databases belonging to supported browsers and email clients. It is compatible with profile-sync-daemon so users need not stop psd before calling profile-cleaner. In fact, profiles will clean much faster when they are synced to tmpfs via psd.
 
 OPTIONS
+	a		Clean ALL supported profiles (auto-detected).
+	
 	c   Clean chromium's profile.
 
 	ck  Clean conkeror's profile(s)*.

@@ -1,6 +1,6 @@
 #!/bin/bash
-export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" RST="\e[00m"
-VERS="1.84"
+export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
+VERS="1.85"
 
 if [[ -z $(which parallel) ]]; then
 	echo "GNU Parallel is now a requirement of this script."
@@ -8,20 +8,105 @@ if [[ -z $(which parallel) ]]; then
 	exit 1
 fi
 
-[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
-echo -e "${RED}profile-cleaner v$VERS${RST}"
+find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" | SHELL=/bin/bash parallel rm -f
+
+echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
 
 do_clean() {
-	echo -en "${GRN} Cleaning${RST} ${1##*/}"
+	echo -en "${GRN} Cleaning${NRM} ${1##*/}"
 	bsize=$(ls -l "$1" | awk {'print $5'})
 	sqlite3 "$1" vacuum
 	sqlite3 "$1" reindex
 	asize=$(ls -l "$1" | awk {'print $5'})
 	dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
-	#echo "$1" reduced by $dsize Mbytes
-	echo -e "$(tput cr)$(tput cuf 46) ${GRN}done${RST}  -${YLW}${dsize}${RST} Mbytes"
-	echo "$name,$dsize" >> /tmp/accounting.db
+	echo -e "$(tput cr)$(tput cuf 46) ${GRN}done${NRM}  -${YLW}${dsize}${NRM} Mbytes"
+	echo "$name,$dsize" >> /tmp/accounting.$name
+}
+
+do_all() {
+
+	### chrome based ###
+
+	for name in chromium google-chrome; do
+		export name
+		prepath=$XDG_CONFIG_HOME/$name
+		[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
+		if [[ ! -d "$profilepath" ]]; then
+			echo -en "${BLD} $name${NRM}"
+			echo -e "$(tput cr)$(tput cuf 16) ${BLD}[ ]${NRM}"
+		else
+			echo -en "${BLD} $name${NRM}"
+			echo -e "$(tput cr)$(tput cuf 16) ${BLD}[${GRN}X${NRM}${BLD}]${NRM}"
+			find "$profilepath" -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' >> /tmp/work2do.$name
+		fi
+	done
+
+	### db based ###
+
+	for name in midori qupzilla; do
+		export name
+		[[ "$name" = "midori" ]] && prepath=$XDG_CONFIG_HOME/$name
+		[[ "$name" = "qupzilla" ]] && prepath=$HOME/.$name/profiles
+		[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
+
+		if [[ ! -d "$profilepath" ]]; then
+			echo -en "${BLD} $name${NRM}"
+			echo -e "$(tput cr)$(tput cuf 16) ${BLD}[ ]${NRM}"
+		else
+			echo -en "${BLD} $name${NRM}"
+			echo -e "$(tput cr)$(tput cuf 16) ${BLD}[${GRN}X${NRM}${BLD}]${NRM}"
+			find "$profilepath" -maxdepth 2 -type f -name '*.db' >> /tmp/work2do.$name
+		fi
+	done
+
+	### xul based ###
+
+	for name in firefox conkeror aurora thunderbird; do
+		[[ "$name" = "firefox" ]] &&  prepath=$HOME/.mozilla/$name
+		[[ "$name" = "conkeror" ]] && prepath=$HOME/.conkeror.mozdev.org/$name
+		[[ "$name" = "aurora" ]] && prepath=$HOME/.mozilla/aurora
+		[[ "$name" = "thunderbird" ]] && prepath=$HOME/.$name
+		export name
+
+		[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
+
+		if [[ ! -f "$profilepath"/profiles.ini ]]; then
+			echo -en "${BLD} $name${NRM}"
+			echo -e "$(tput cr)$(tput cuf 16) ${BLD}[ ]${NRM}"
+		else
+			echo -en "${BLD} $name${NRM}"
+			echo -e "$(tput cr)$(tput cuf 16) ${BLD}[${GRN}X${NRM}${BLD}]${NRM}"
+			workArr=( $(grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//' -e 's/\r//') )
+			for i in "${workArr[@]}"; do
+				if [ ! -d "$profilepath/$i" ]; then
+					find "$i" -maxdepth 4 -type f -name '*.db' >> /tmp/work2do.$name
+					find "$profilepath" -maxdepth 2 -type f -name '*.db' >> /tmp/work2do.$name
+				fi
+			done
+		fi
+	done
+
+	### run cleaner ###
+
+	echo
+
+	for i in /tmp/work2do.*; do
+		name=${i##*.}
+		export name
+		cat $i | SHELL=/bin/bash parallel do_clean 2>/dev/null
+	done
+
+	### report savings and remove temp files ###
+
+	echo	
+
+	for i in /tmp/accounting.*; do
+		name=${i##*.}
+		echo -e " ${BLD}Profile(s) for ${i##*.} reduced by ${YLW}$(grep $name $i | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${RTS}"
+	done
+
+	find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" | SHELL=/bin/bash parallel rm -f
 }
 
 do_chromebased() {
@@ -30,8 +115,8 @@ do_chromebased() {
 	echo -e " ${RED}Cleaning profile for $name${RTS}"
 	find "$profilepath" -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
 	echo
-	echo -e " ${BLD}Profile for $name was reduced by ${YLW}$(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${RST} ${BLD}Mbytes.${RTS}"
-	[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
+	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${RTS}"
+	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
 }
 
 do_xulbased() {
@@ -70,8 +155,8 @@ do_xulbased() {
 	echo -e " ${RED}Cleaning profile for $name${RTS}"
 	find -L ${FinalArr[@]} -maxdepth 2 -name '*.sqlite' | SHELL=/bin/bash parallel do_clean 2>/dev/null	
 	echo
-	echo -e " ${BLD}Profile for $name was reduced by ${YLW}$(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${RST} ${BLD}Mbytes.${RTS}"
-	[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
+	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${RTS}"
+	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
 }
 
 do_dbbased() {
@@ -80,13 +165,17 @@ do_dbbased() {
 	echo -e " ${RED}Cleaning profile for $name${RTS}"
 	find ${profilepath} -maxdepth 2 -type f -name '*.db' | SHELL=/bin/bash parallel do_clean 2>/dev/null
 	echo
-	echo -e " ${BLD}Profile for $name was reduced by ${YLW}$(grep $name /tmp/accounting.db | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${RST} ${BLD}Mbytes.${RTS}"
-	[[ -f /tmp/accounting.db ]] && rm -f /tmp/accounting.db
+	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${RTS}"
+	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
 }
 
 export -f do_clean
 
 case "$1" in
+	A|a)
+		do_all
+		exit 0
+		;;
 	C|c)
 		name="chromium" ; export name
 		prepath=$XDG_CONFIG_HOME/$name
@@ -136,7 +225,8 @@ case "$1" in
 		exit 0
 		;;
 	*)
-		echo -e "$0 ${GRN}{a|c|ck|f|gc|t}${RST}"
+		echo -e "$0 ${GRN}{a|c|ck|f|gc|t}${NRM}"
+		echo " a) ALL supported profiles (auto-detected)"
 		echo " c) Chromium"
 		echo "ck) Conkeror"
 		echo " f) Firefox"

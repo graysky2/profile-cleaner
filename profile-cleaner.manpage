@@ -17,6 +17,10 @@ Profile-cleaner is a very simple shell script that will invoke sqlite3 to vacuum
 .SH OPTIONS
 .TP
 .B
+a
+Clean ALL supported profiles (auto-detected).
+.TP
+.B
 c
 Clean chromium's profile.
 .TP
