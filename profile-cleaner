@@ -15,10 +15,10 @@ echo
 
 do_clean() {
 	echo -en "${GRN} Cleaning${NRM} ${1##*/}"
-	bsize=$(ls -l "$1" | awk {'print $5'})
+	bsize=$(ls -l "$1" | gawk {'print $5'})
 	sqlite3 "$1" vacuum
 	sqlite3 "$1" reindex
-	asize=$(ls -l "$1" | awk {'print $5'})
+	asize=$(ls -l "$1" | gawk {'print $5'})
 	dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
 	echo -e "$(tput cr)$(tput cuf 46) ${GRN}done${NRM}  -${YLW}${dsize}${NRM} Mbytes"
 	echo "$name,$dsize" >> /tmp/accounting.$name
