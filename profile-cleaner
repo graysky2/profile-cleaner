@@ -1,10 +1,9 @@
 #!/bin/bash
 export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
-VERS="1.86"
+VERS="1.87"
 
 if [[ -z $(which parallel) ]]; then
-	echo "GNU Parallel is now a requirement of this script."
-	echo "Please install it and try again."
+	echo -e ${RED}"Error: GNU Parallel is now a requirement of this script. Please install it and try again."${NRM}
 	exit 1
 fi
 
@@ -30,7 +29,7 @@ do_all() {
 
 	for name in chromium google-chrome; do
 		export name
-		prepath=$XDG_CONFIG_HOME/$name
+		prepath=$HOME/.config/$name
 		[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 		if [[ ! -d "$profilepath" ]]; then
 			echo -en "${BLD} $name${NRM}"
@@ -46,7 +45,7 @@ do_all() {
 
 	for name in midori qupzilla; do
 		export name
-		[[ "$name" = "midori" ]] && prepath=$XDG_CONFIG_HOME/$name
+		[[ "$name" = "midori" ]] && prepath=$HOME/.config/$name
 		[[ "$name" = "qupzilla" ]] && prepath=$HOME/.$name/profiles
 		[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 
@@ -111,7 +110,7 @@ do_all() {
 
 do_chromebased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for $name found." &&	exit 1
+	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
 	echo -e " ${YLW}Cleaning profile for $name${RTS}"
 	find "$profilepath" -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
 	echo
@@ -129,12 +128,12 @@ do_xulbased() {
 	[[ "$name" = "aurora" ]] && name="heftig aurora"
 
 	if [[ ! -d "$profilepath" ]]; then
-		echo "Error: cannot locate $profilepath"
-		echo "This is the default path for $name and where $0 expects to find it."
+		echo -e ${RED}"Error: cannot locate $profilepath"${NRM}
+		echo -e ${BLD}"This is the default path for $name and where $0 expects to find it."${NRM}
 		exit 1
 	fi
 
-	[[ ! -f $profilepath/profiles.ini ]] && echo "Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name." && 	exit 1
+	[[ ! -f $profilepath/profiles.ini ]] && echo -e ${RED}"Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name."${NRM} &&	exit 1
 
 	# workArr is a raw list of profiles
 	workArr=( $(grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//' -e 's/\r//') )	# read each profile into the work array
@@ -161,7 +160,7 @@ do_xulbased() {
 
 do_dbbased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] &&	echo "Error: no profile directory for $name found." &&	exit 1
+	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
 	echo -e " ${RED}Cleaning profile for $name${RTS}"
 	find ${profilepath} -maxdepth 2 -type f -name '*.db' | SHELL=/bin/bash parallel do_clean 2>/dev/null
 	echo
@@ -178,13 +177,13 @@ case "$1" in
 		;;
 	C|c)
 		name="chromium" ; export name
-		prepath=$XDG_CONFIG_HOME/$name
+		prepath=$HOME/.config/$name
 		do_chromebased
 		exit 0
 		;;
 	Gc|gC|GC|gc)
 		name="google-chrome" ; export name
-		prepath=$XDG_CONFIG_HOME/$name
+		prepath=$HOME/.config/$name
 		do_chromebased
 		exit 0
 		;;	
@@ -214,7 +213,7 @@ case "$1" in
 		;;
 	M|m)
 		name="midori"; export name
-		prepath=$XDG_CONFIG_HOME/$name
+		prepath=$HOME/.config/$name
 		do_dbbased
 		exit 0
 		;;

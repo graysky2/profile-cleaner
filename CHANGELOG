@@ -1,5 +1,9 @@
+v1.87
+03-Dec-2012
+Replaced $XDG_CONFIG_HOME with long-hand $HOME/.config and colorized error messages.
+
 v1.86
-01-Decv-2012
+01-Dec-2012
 Minor cosmetic tweaks.
 
 v1.85
