@@ -1,6 +1,6 @@
 #!/bin/bash
 export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
-VERS="1.87"
+VERS="1.88"
 
 if [[ -z $(which parallel) ]]; then
 	echo -e ${RED}"Error: GNU Parallel is now a requirement of this script. Please install it and try again."${NRM}
@@ -11,6 +11,10 @@ find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" | SH
 
 echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
+
+#	$XDG_CONFIG_HOME should be mapped to $HOME/.config
+# some users may have modified it to a custom location so honor that
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"	
 
 do_clean() {
 	echo -en "${GRN} Cleaning${NRM} ${1##*/}"
@@ -29,7 +33,7 @@ do_all() {
 
 	for name in chromium google-chrome; do
 		export name
-		prepath=$HOME/.config/$name
+		prepath="$XDG_CONFIG_HOME"
 		[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 		if [[ ! -d "$profilepath" ]]; then
 			echo -en "${BLD} $name${NRM}"
@@ -45,7 +49,7 @@ do_all() {
 
 	for name in midori qupzilla; do
 		export name
-		[[ "$name" = "midori" ]] && prepath=$HOME/.config/$name
+		[[ "$name" = "midori" ]] && prepath="$XDG_CONFIG_HOME"/$name
 		[[ "$name" = "qupzilla" ]] && prepath=$HOME/.$name/profiles
 		[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 
@@ -102,7 +106,7 @@ do_all() {
 
 	for i in /tmp/accounting.*; do
 		name=${i##*.}
-		echo -e " ${BLD}Profile(s) for ${i##*.} reduced by ${YLW}$(grep $name $i | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${RTS}"
+		echo -e " ${BLD}Profile(s) for ${i##*.} reduced by ${YLW}$(grep $name $i | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
 	done
 
 	find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" | SHELL=/bin/bash parallel rm -f
@@ -111,10 +115,10 @@ do_all() {
 do_chromebased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
-	echo -e " ${YLW}Cleaning profile for $name${RTS}"
+	echo -e " ${YLW}Cleaning profile for $name${NRM}"
 	find "$profilepath" -maxdepth 2 -type f -name 'Histor*' -o -name 'Archiv*' -o -name 'Safe*' | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
 	echo
-	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${RTS}"
+	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
 	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
 }
 
@@ -151,20 +155,20 @@ do_xulbased() {
 	done
 
 	# here is the actual worker
-	echo -e " ${RED}Cleaning profile for $name${RTS}"
+	echo -e " ${YLW}Cleaning profile for $name${NRM}"
 	find -L ${FinalArr[@]} -maxdepth 2 -name '*.sqlite' | SHELL=/bin/bash parallel do_clean 2>/dev/null	
 	echo
-	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${RTS}"
+	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
 	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
 }
 
 do_dbbased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
-	echo -e " ${RED}Cleaning profile for $name${RTS}"
+	echo -e " ${YLW}Cleaning profile for $name${NRM}"
 	find ${profilepath} -maxdepth 2 -type f -name '*.db' | SHELL=/bin/bash parallel do_clean 2>/dev/null
 	echo
-	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${RTS}"
+	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
 	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
 }
 
@@ -177,13 +181,13 @@ case "$1" in
 		;;
 	C|c)
 		name="chromium" ; export name
-		prepath=$HOME/.config/$name
+		prepath="$XDG_CONFIG_HOME"/$name
 		do_chromebased
 		exit 0
 		;;
 	Gc|gC|GC|gc)
 		name="google-chrome" ; export name
-		prepath=$HOME/.config/$name
+		prepath="$XDG_CONFIG_HOME"/$name
 		do_chromebased
 		exit 0
 		;;	
@@ -213,7 +217,7 @@ case "$1" in
 		;;
 	M|m)
 		name="midori"; export name
-		prepath=$HOME/.config/$name
+		prepath="$XDG_CONFIG_HOME"/$name
 		do_dbbased
 		exit 0
 		;;

@@ -1,3 +1,7 @@
+v1.88
+03-Dec-2012
+Honor custom locations for XDG_CONFIG_HOME (thanks to fschiff for the suggestion).
+
 v1.87
 03-Dec-2012
 Replaced $XDG_CONFIG_HOME with long-hand $HOME/.config and colorized error messages.
