@@ -1,6 +1,6 @@
 #!/bin/bash
 export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
-VERS="1.89"
+VERS="1.90"
 
 if [[ -z $(which parallel) ]]; then
 	echo -e ${RED}"Error: GNU Parallel is now a requirement of this script. Please install it and try again."${NRM}
