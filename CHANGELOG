@@ -1,3 +1,7 @@
+v1.89
+06-Dec-2012
+Less verbose output on errors.
+
 v1.88
 03-Dec-2012
 Honor custom locations for XDG_CONFIG_HOME (thanks to fschiff for the suggestion).

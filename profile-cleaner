@@ -1,13 +1,13 @@
 #!/bin/bash
 export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
-VERS="1.88"
+VERS="1.89"
 
 if [[ -z $(which parallel) ]]; then
 	echo -e ${RED}"Error: GNU Parallel is now a requirement of this script. Please install it and try again."${NRM}
 	exit 1
 fi
 
-find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" | SHELL=/bin/bash parallel rm -f
+find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" | SHELL=/bin/bash parallel rm -f 2>/dev/null
 
 echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
