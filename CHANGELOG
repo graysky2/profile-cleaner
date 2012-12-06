@@ -1,3 +1,7 @@
+v1.90
+06-Dec-2012
+Repositioned the 2>/dev/null to be more meaningful.
+
 v1.89
 06-Dec-2012
 Less verbose output on errors.

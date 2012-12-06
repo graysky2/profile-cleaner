@@ -7,7 +7,7 @@ if [[ -z $(which parallel) ]]; then
 	exit 1
 fi
 
-find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" | SHELL=/bin/bash parallel rm -f 2>/dev/null
+find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" 2>/dev/null | SHELL=/bin/bash parallel rm -f
 
 echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
