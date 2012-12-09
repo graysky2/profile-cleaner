@@ -1,6 +1,6 @@
 #!/bin/bash
 export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
-VERS="1.92"
+VERS="1.93"
 
 if [[ -z $(which parallel) ]]; then
 	echo -e ${RED}"Error: GNU Parallel is now a requirement of this script. Please install it and try again."${NRM}
@@ -12,8 +12,11 @@ find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" 2>/d
 echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
 
+#
 #	$XDG_CONFIG_HOME should be mapped to $HOME/.config
 # some users may have modified it to a custom location so honor that
+#
+
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"	
 
 do_clean() {
@@ -28,7 +31,7 @@ do_clean() {
 }
 
 find_dbs() {
-	find "$profilepath" -maxdepth 2 -type f| while read i; do 
+	find "$profilepath" -maxdepth 2 -type f | while read i; do 
 	[[ -n $(file "$i" | grep SQLite) ]] && echo "${i}" >> /tmp/work2do.$name
 done
 }
@@ -37,7 +40,7 @@ do_chromebased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
 	echo -e " ${YLW}Cleaning profile for $name${NRM}"
-	find_dbs 
+	find_dbs
 	cat /tmp/work2do.$name | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
 	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
 	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
@@ -61,27 +64,49 @@ do_xulbased() {
 
 	[[ ! -f $profilepath/profiles.ini ]] && echo -e ${RED}"Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name."${NRM} &&	exit 1
 
-	# workArr is a raw list of profiles
-	workArr=( $(grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//' -e 's/\r//') )	# read each profile into the work array
+	#
+	# read each profile into a temp file for processing
+	#
 
-	# FinalArr is a processed list of profiles
-	# they are formated to abs paths since some are rel and some are abs
+	profiles_extracted=/tmp/$name.tmplist
+	grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//' >$profiles_extracted
+
+	#
+	# build an array correcting for rel and abs paths therein
+	# while read will read line-by-line and will tolerate spaces whereas a for loop will not
+	#
+
 	index=0
-	for i in "${workArr[@]}"; do
-		if [ ! -d ${profilepath}/"$i" ]; then
-			FinalArr[index]="$i"
+	while read line; do
+		if [[ ! -d "$profilepath/$line" ]]; then
+			finalArr[index]="$line"
 		else
-			FinalArr[index]="$profilepath/$i"
+			finalArr[index]="$profilepath/$line"
 		fi
 		index=$index+1
-	done
+	done <$profiles_extracted
 
-	# here is the actual worker
+	[[ -f $profiles_extracted ]] && rm -f $profiles_extracted
+
+	#
+	# identify which files are sqlite dbs and add them to the work2do file for parallel processing
+	#
 	echo -e " ${YLW}Cleaning profile for $name${NRM}"
-	find -L ${FinalArr[@]} -maxdepth 2 -name '*.sqlite' | SHELL=/bin/bash parallel do_clean 2>/dev/null	
-	echo
-	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
-	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
+	for i in "${finalArr[@]}"; do
+		find "$i" -maxdepth 2 -type f | while read line; do
+		[[ -n $(file "$line" | grep SQLite) ]] && echo "$line" >> /tmp/work2do.$name
+	done
+done
+
+#
+# process the work
+#
+
+cat /tmp/work2do.$name | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
+echo
+echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
+[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
+[[ -f /tmp/work2do.$name ]] && rm -f /tmp/work2do.$name
 }
 
 do_dbbased() {
@@ -92,6 +117,7 @@ do_dbbased() {
 	echo
 	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
 	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
+	[[ -f /tmp/work2do.$name ]] && rm -f /tmp/work2do.$name
 }
 
 export -f do_clean
