@@ -1,6 +1,6 @@
 #!/bin/bash
 export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
-VERS="1.91"
+VERS="1.92"
 
 if [[ -z $(which parallel) ]]; then
 	echo -e ${RED}"Error: GNU Parallel is now a requirement of this script. Please install it and try again."${NRM}
@@ -37,7 +37,8 @@ do_chromebased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
 	echo -e " ${YLW}Cleaning profile for $name${NRM}"
-	find_dbs && cat /tmp/work2do.$name | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
+	find_dbs 
+	cat /tmp/work2do.$name | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
 	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
 	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
 	[[ -f /tmp/work2do.$name ]] && rm -f /tmp/work2do.$name
