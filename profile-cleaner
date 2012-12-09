@@ -1,6 +1,6 @@
 #!/bin/bash
 export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
-VERS="1.93"
+VERS="1.94"
 
 if [[ -z $(which parallel) ]]; then
 	echo -e ${RED}"Error: GNU Parallel is now a requirement of this script. Please install it and try again."${NRM}
@@ -69,7 +69,7 @@ do_xulbased() {
 	#
 
 	profiles_extracted=/tmp/$name.tmplist
-	grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//' >$profiles_extracted
+	grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//' -e 's/\r//' >$profiles_extracted
 
 	#
 	# build an array correcting for rel and abs paths therein
