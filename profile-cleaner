@@ -7,8 +7,6 @@ if [[ -z $(which parallel) ]]; then
 	exit 1
 fi
 
-find /tmp -name 'work2do.*' -o -name 'accounting.*' -o -name "totalwork2do" 2>/dev/null | SHELL=/bin/bash parallel rm -f
-
 echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
 
@@ -21,30 +19,41 @@ XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
 do_clean() {
 	echo -en "${GRN} Cleaning${NRM} ${1##*/}"
-	bsize=$(ls -l "$1" | gawk {'print $5'})
+	bsize=$(du -b "$1" | cut -f 1)
+	
 	sqlite3 "$1" vacuum
 	sqlite3 "$1" reindex
-	asize=$(ls -l "$1" | gawk {'print $5'})
+	
+	asize=$(du -b "$1" | cut -f 1)
 	dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
 	echo -e "$(tput cr)$(tput cuf 46) ${GRN}done${NRM}  -${YLW}${dsize}${NRM} Mbytes"
-	echo "$name,$dsize" >> /tmp/accounting.$name
+}
+
+do_clean_parallel () {
+	bsize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
+	
+	SHELL=/bin/bash parallel -k do_clean ::: "${toclean[@]}" 2>/dev/null
+	
+	asize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
+	cleanedsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
 }
 
 find_dbs() {
-	find "$profilepath" -maxdepth 2 -type f | while read i; do 
-	[[ -n $(file "$i" | grep SQLite) ]] && echo "${i}" >> /tmp/work2do.$name
-done
+	# fill toclean array by looking for SQLite files in each input directory
+	toclean=()
+	while read i; do
+		toclean+=("${i}")
+	done < <( find -L "$@" -maxdepth 2 -type f -print0 2>/dev/null | xargs -0 file -e ascii | sed -n -e "s/:.*SQLite.*//p" )
 }
 
 do_chromebased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
 	echo -e " ${YLW}Cleaning profile for $name${NRM}"
-	find_dbs
-	cat /tmp/work2do.$name | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
-	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
-	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
-	[[ -f /tmp/work2do.$name ]] && rm -f /tmp/work2do.$name
+	find_dbs "$profilepath"
+	do_clean_parallel
+	echo
+	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
 }
 
 do_xulbased() {
@@ -63,13 +72,6 @@ do_xulbased() {
 	[[ ! -f $profilepath/profiles.ini ]] && echo -e ${RED}"Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name."${NRM} &&	exit 1
 
 	#
-	# read each profile into a temp file for processing
-	#
-
-	profiles_extracted=/tmp/$name.tmplist
-	grep '[P,p]'ath $profilepath/profiles.ini | sed -e 's/[P,p]ath=//' -e 's/\r//' >$profiles_extracted
-
-	#
 	# build an array correcting for rel and abs paths therein
 	# while read will read line-by-line and will tolerate spaces whereas a for loop will not
 	#
@@ -82,40 +84,23 @@ do_xulbased() {
 			finalArr[index]="$profilepath/$line"
 		fi
 		index=$index+1
-	done <$profiles_extracted
+	done < <(grep '[P,p]'ath "$profilepath/profiles.ini" | sed -e 's/[P,p]ath=//' -e 's/\r//' )
 
-	[[ -f $profiles_extracted ]] && rm -f $profiles_extracted
-
-	#
-	# identify which files are sqlite dbs and add them to the work2do file for parallel processing
-	#
 	echo -e " ${YLW}Cleaning profile for $name${NRM}"
-	for i in "${finalArr[@]}"; do
-		find "$i" -maxdepth 2 -type f | while read line; do
-		[[ -n $(file "$line" | grep SQLite) ]] && echo "$line" >> /tmp/work2do.$name
-	done
-done
-
-#
-# process the work
-#
-
-cat /tmp/work2do.$name | SHELL=/bin/bash parallel -k do_clean 2>/dev/null
-echo
-echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
-[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
-[[ -f /tmp/work2do.$name ]] && rm -f /tmp/work2do.$name
+	find_dbs "${finalArr[@]}"
+	do_clean_parallel
+	echo
+	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
 }
 
 do_dbbased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
 	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
 	echo -e " ${YLW}Cleaning profile for $name${NRM}"
-	find ${profilepath} -maxdepth 2 -type f -name '*.db' | SHELL=/bin/bash parallel do_clean 2>/dev/null
+	find_dbs "${profilepath}"
+	do_clean_parallel
 	echo
-	echo -e " ${BLD}Profile for $name reduced by ${YLW}$(grep $name /tmp/accounting.$name | gawk -F, '{ print $2 }' | paste -sd+ - | bc)${NRM} ${BLD}Mbytes.${NRM}"
-	[[ -f /tmp/accounting.$name ]] && rm -f /tmp/accounting.$name
-	[[ -f /tmp/work2do.$name ]] && rm -f /tmp/work2do.$name
+	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
 }
 
 export -f do_clean
