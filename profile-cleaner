@@ -30,6 +30,7 @@ do_clean() {
 }
 
 do_clean_parallel () {
+	[[ ${#toclean[@]} -eq 0 ]] && cleanedsize=0 && return 1
 	bsize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
 	
 	SHELL=/bin/bash parallel -k do_clean ::: "${toclean[@]}" 2>/dev/null
@@ -103,6 +104,17 @@ do_dbbased() {
 	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
 }
 
+do_paths() {
+	profilepaths=()
+	for profilepath in "$@"; do
+		[[ -d "$profilepath" ]] && profilepaths+=("$profilepath")
+	done
+	find_dbs "${profilepaths[@]}"
+	do_clean_parallel
+	echo
+	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
+}
+
 export -f do_clean
 
 case "$1" in
@@ -154,8 +166,14 @@ case "$1" in
 		do_dbbased
 		exit 0
 		;;
+	P|p)
+		name="paths"; export name
+		shift
+		do_paths "$@"
+		exit 0
+		;;
 	*)
-		echo -e " ${BLD}$0 ${NRM}${GRN}{c|ck|f|gc|h|m|t|q}${NRM}"
+		echo -e " ${BLD}$0 ${NRM}${GRN}{c|ck|f|gc|h|m|t|q|p}${NRM}"
 		echo
 		echo -e "  ${BLD}c) ${GRN}C${NRM}${BLD}hromium"${NRM}
 		echo -e " ${BLD}ck) ${GRN}C${NRM}${BLD}on${GRN}k${NRM}${BLD}eror"${NRM}
@@ -165,6 +183,7 @@ case "$1" in
 		echo -e "  ${BLD}m) ${GRN}M${NRM}${BLD}idori"${NRM}
 		echo -e "  ${BLD}t) ${GRN}T${NRM}${BLD}hunderbird"${NRM}
 		echo -e "  ${BLD}q) ${GRN}Q${NRM}${BLD}upZilla"${NRM}
+		echo -e "  ${BLD}p) ${GRN}P${NRM}${BLD}aths"${NRM}
 		exit 0
 		;;
 esac
