@@ -22,8 +22,25 @@ OPTIONS
 
 	t   Clean thunderbird's profile(s)*.
 
+	p		Clean the defined paths.
 
 *Profile-cleaner will parse the respective profiles.ini file and clean all profiles defined therein.
+
+EXAMPLES
+Clean all firefox profiles:
+
+
+ $ profile-cleaner f
+
+Clean chromium profile:
+
+
+ $ profile-cleaner c
+
+Clean the user defined profile:
+
+
+ $ profile-cleaner p /path/to/profile
 
 SUPPORTED BROWSERS AND EMAIL CLIENTS
 	Currently, the following are supported:
