@@ -1,3 +1,7 @@
+v1.98
+14-Feb-2013
+Switch to Makefile paradigm for wider support on other distros.
+
 v1.97
 12-Dec-2012
 Support paths from command line (aesiris).

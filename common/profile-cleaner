@@ -1,5 +1,5 @@
 #!/bin/bash
-VERS="1.97"
+VERS="@VERSION@"
 
 #
 #	$XDG_CONFIG_HOME should be mapped to $HOME/.config
@@ -39,6 +39,14 @@ fi
 
 echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
+
+dep_check() {
+  # Although the package manager should handle these deps, this function is a sanity check for users.
+  command -v sqlite3 >/dev/null 2>&1 || { echo "I require sqlite3 but it's not installed. Aborting." >&2; exit 1; }
+  command -v bc >/dev/null 2>&1 || { echo "I require bc but it's not installed. Aborting." >&2; exit 1; }
+  command -v find >/dev/null 2>&1 || { echo "I require find but it's not installed. Aborting." >&2; exit 1; }
+  command -v parallel >/dev/null 2>&1 || { echo "I require parallel but it's not installed. Aborting." >&2; exit 1; }
+}
 
 do_clean() {
 	echo -en "${GRN} Cleaning${NRM} ${1##*/}"
@@ -139,6 +147,7 @@ do_paths() {
 }
 
 export -f do_clean
+dep_check
 
 case "$1" in
 	C|c)
