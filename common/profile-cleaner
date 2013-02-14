@@ -32,11 +32,6 @@ fi
 [[ "$COLORS" = "dark" ]] &&  export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
 [[ "$COLORS" = "light" ]] && export BLD="\e[01m" RED="\e[00;31m" GRN="\e[00;32m" YLW="\e[00;34m" NRM="\e[00m"
 
-if [[ -z $(which parallel) ]]; then
-	echo -e ${RED}"Error: GNU Parallel is now a requirement of this script. Please install it and try again."${NRM}
-	exit 1
-fi
-
 echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
 
