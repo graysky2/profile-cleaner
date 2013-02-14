@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+echo '--------------------------------------------------------------------------'
+echo '  Make sure that target browsers or email clients are not running when'
+echo '  invoking profile-cleaner. Failure to do so will result in the open files'
+echo '  NOT getting cleaned and reindexed.'
+echo '--------------------------------------------------------------------------'
