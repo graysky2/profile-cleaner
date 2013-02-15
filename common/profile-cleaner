@@ -59,7 +59,8 @@ do_clean_parallel () {
 	[[ ${#toclean[@]} -eq 0 ]] && cleanedsize=0 && return 1
 	bsize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
 	
-	SHELL=/bin/bash parallel -k do_clean ::: "${toclean[@]}" 2>/dev/null
+	#SHELL=/bin/bash parallel -k do_clean ::: "${toclean[@]}" 2>/dev/null
+	SHELL=/bin/bash parallel -k do_clean ::: "${toclean[@]}"
 	
 	asize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
 	cleanedsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
