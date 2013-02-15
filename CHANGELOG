@@ -1,3 +1,7 @@
+v1.99
+15-Feb-2013
+Added --gnu switch to parallel for compatibility on ubuntu, debian, and fedora (aesiris).
+
 v1.98
 14-Feb-2013
 Switch to Makefile paradigm for wider support on other distros.
