@@ -1,3 +1,7 @@
+v2.00
+16-Feb-2013
+Updated man page.
+
 v1.99
 15-Feb-2013
 Added --gnu switch to parallel for compatibility on ubuntu, debian, and fedora (aesiris).
