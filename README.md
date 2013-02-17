@@ -12,24 +12,6 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 To add the PPA (personal package archive) to your Debian (tested on squeeze) system, and to install psd, do the following as the root user:
 
     echo "deb http://ppa.launchpad.net/graysky/utils/ubuntu quantal main" > /etc/apt/sources.list.d/graysky.list
-		    echo "deb-src http://ppa.launchpad.net/graysky/utils/ubuntu quantal main" >> /etc/apt/sources.list.d/graysky.list
-				    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FF7F9516
-						    apt-get update
-								    apt-get install profile-sync-daemon
-
-										###Ubuntu Users
-										To add the PPA (personal package archive) to your Ubuntu (packages available for Lucid and newer) system, and to install psd:
-
-										    sudo add-apt-repository ppa:graysky/utils
-												    sudo apt-get update
-														    sudo apt-get install profile-sync-daemon
-
-																###Other Distros
-																If you are interested in packaging psd for your favorite distro, please contact me.
-###Debian Users
-To add the PPA (personal package archive) to your Debian (tested on squeeze) system, and to install psd, do the following as the root user:
-
-    echo "deb http://ppa.launchpad.net/graysky/utils/ubuntu quantal main" > /etc/apt/sources.list.d/graysky.list
     echo "deb-src http://ppa.launchpad.net/graysky/utils/ubuntu quantal main" >> /etc/apt/sources.list.d/graysky.list
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FF7F9516
     apt-get update
