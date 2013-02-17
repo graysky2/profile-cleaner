@@ -15,14 +15,14 @@ To add the PPA (personal package archive) to your Debian (tested on squeeze) sys
     echo "deb-src http://ppa.launchpad.net/graysky/utils/ubuntu quantal main" >> /etc/apt/sources.list.d/graysky.list
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FF7F9516
     apt-get update
-    apt-get install profile-sync-daemon
+    apt-get install profile-cleaner
 
 ###Ubuntu Users
 To add the PPA (personal package archive) to your Ubuntu (packages available for Lucid and newer) system, and to install psd:
 
     sudo add-apt-repository ppa:graysky/utils
     sudo apt-get update
-    sudo apt-get install profile-sync-daemon
+    sudo apt-get install profile-cleaner
 
 ###Other Distros
 If you are interested in packaging psd for your favorite distro, please contact me.
@@ -60,7 +60,7 @@ If you are interested in packaging psd for your favorite distro, please contact 
 ## Speed Comparison
 28-Nov-2012		Profile-cleaner has been rewritten to use GNU Parallel for processing.
 
-Here is a contrived example syncing 6 firefox profiles comparing the classical version of Profile-cleaner which used for loops to process profiles to the new version:
+Here is a contrived example cleaning 6 firefox profiles comparing the classical version of Profile-cleaner which used for loops to process profiles to the new version:
 
 * There are a total of 312 M in the 6 "dirty" profiles.
 * Test machine is an Intel 3770K @ 4.50 GHz.
