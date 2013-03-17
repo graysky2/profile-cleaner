@@ -5,8 +5,8 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 * ![logo](http://www.monitorix.org/imgs/archlinux.png "arch logo")Arch via AUR Package: https://aur.archlinux.org/packages/profile-cleaner
 * ![logo](http://chakra-linux.org/img/icon/chakra-kde_32.png "chakra logo")Chakra via CCR Package: http://chakra-linux.org/ccr/packages.php?ID=4501
 * ![logo](http://freedos-32.sourceforge.net/lean/debian_logo.png "debian logo")Debian: See instruction below
-* ![logo](http://www.repo-ck.com/fedora.png "fedora logo")Fedora: http://repo-ck.com/fedora_rpms
-* ![logo](http://www.repo-ck.com/linux_mint.png "mint logo")Mint: See instruction below
+* ![logo](http://sec-wall.gefira.pl/media/gfx/logo-fedora.png "fedora logo")Fedora: http://repo-ck.com/fedora_rpms
+* ![logo](http://www.haskell.org/platform/icons/mint.png "mint logo")Mint: See instruction below
 * ![logo](http://www.monitorix.org/imgs/ubuntu.png "ubuntu logo")Ubuntu: See instructions below
 
 ###Debian Users
