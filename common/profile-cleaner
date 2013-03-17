@@ -175,6 +175,12 @@ case "$1" in
 		do_xulbased
 		exit 0
 		;;
+	S|s)
+		name="seamonkey"; export name
+		prepath=$HOME/.mozilla/$name
+		do_xulbased
+		exit 0
+		;;
 	T|t)
 		name="thunderbird"; export name
 		prepath=$HOME/.$name
@@ -210,6 +216,7 @@ case "$1" in
 		echo -e "  ${BLD}m) ${GRN}M${NRM}${BLD}idori"${NRM}
 		echo -e "  ${BLD}t) ${GRN}T${NRM}${BLD}hunderbird"${NRM}
 		echo -e "  ${BLD}q) ${GRN}Q${NRM}${BLD}upZilla"${NRM}
+		echo -e "  ${BLD}s) ${GRN}S${NRM}${BLD}eamonkey"${NRM}
 		echo -e "  ${BLD}p) ${GRN}P${NRM}${BLD}aths"${NRM}
 		exit 0
 		;;
