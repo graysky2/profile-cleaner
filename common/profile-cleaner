@@ -39,6 +39,7 @@ dep_check() {
   # Although the package manager should handle these deps, this function is a sanity check for users.
   command -v sqlite3 >/dev/null 2>&1 || { echo "I require sqlite3 but it's not installed. Aborting." >&2; exit 1; }
   command -v bc >/dev/null 2>&1 || { echo "I require bc but it's not installed. Aborting." >&2; exit 1; }
+  command -v xargs >/dev/null 2>&1 || { echo "I require xargs but it's not installed. Aborting." >&2; exit 1; }
   command -v find >/dev/null 2>&1 || { echo "I require find but it's not installed. Aborting." >&2; exit 1; }
   command -v parallel >/dev/null 2>&1 || { echo "I require parallel but it's not installed. Aborting." >&2; exit 1; }
 }
