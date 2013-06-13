@@ -2,46 +2,66 @@
 VERS="@VERSION@"
 
 #
-#	$XDG_CONFIG_HOME should be mapped to $HOME/.config
+# $XDG_CONFIG_HOME should be mapped to $HOME/.config
 # some users may have modified it to a custom location so honor that
 #
 
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"	
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
 #
 # read in config file
 #
 
-config="$XDG_CONFIG_HOME/profile-cleaner.conf"	# profile-cleaner config
+config="$XDG_CONFIG_HOME/profile-cleaner.conf"
 
 if [[ -f $config ]]; then
 	. $config
 else
-	echo "#" > $config 
-	echo "# $HOME/.config/profile-cleaner.conf" >> $config 
-	echo "#" >> $config 
-	echo >> $config 
-	echo "# Define the background of your terminal theme here." >> $config 
-	echo "# A setting of "dark" will produce colors that nicely contrast a dark background." >> $config 
-	echo "#  setting of "light" will produce colors that nicely contrast a light background." >> $config 
-	echo "COLORS=dark" >> $config 
-	echo "#COLORS=light" >> $config 
+	echo "#" > $config
+	echo "# $HOME/.config/profile-cleaner.conf" >> $config
+	echo "#" >> $config
+	echo >> $config
+	echo "# Define the background of your terminal theme here." >> $config
+	echo "# A setting of "dark" will produce colors that nicely contrast a dark background." >> $config
+	echo "# A setting of "light" will produce colors that nicely contrast a light background." >> $config
+	echo "COLORS=dark" >> $config
+	echo "#COLORS=light" >> $config
 fi
 
-[[ -z "$COLORS" ]] && COLORS="dark"	# if users screws up syntax, default to dark
-[[ "$COLORS" = "dark" ]] &&  export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
-[[ "$COLORS" = "light" ]] && export BLD="\e[01m" RED="\e[00;31m" GRN="\e[00;32m" YLW="\e[00;34m" NRM="\e[00m"
+# if users screws up syntax, default to dark$
+[[ -z "$COLORS" ]] && COLORS="dark"
+[[ "$COLORS" = "dark" ]] && export BLD="\e[01m" \
+	RED="\e[01;31m" \
+	GRN="\e[01;32m" \
+	YLW="\e[01;33m" \
+	NRM="\e[00m"
+[[ "$COLORS" = "light" ]] && export BLD="\e[01m" \
+	RED="\e[00;31m" \
+	GRN="\e[00;32m" \
+	YLW="\e[00;34m" \
+	NRM="\e[00m"
 
 echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
 
 dep_check() {
-  # Although the package manager should handle these deps, this function is a sanity check for users.
-  command -v sqlite3 >/dev/null 2>&1 || { echo "I require sqlite3 but it's not installed. Aborting." >&2; exit 1; }
-  command -v bc >/dev/null 2>&1 || { echo "I require bc but it's not installed. Aborting." >&2; exit 1; }
-  command -v xargs >/dev/null 2>&1 || { echo "I require xargs but it's not installed. Aborting." >&2; exit 1; }
-  command -v find >/dev/null 2>&1 || { echo "I require find but it's not installed. Aborting." >&2; exit 1; }
-  command -v parallel >/dev/null 2>&1 || { echo "I require parallel but it's not installed. Aborting." >&2; exit 1; }
+  # Although the package manager should handle these deps
+	# this function is a sanity check for users.
+  command -v bc >/dev/null 2>&1 || {
+	echo "I require bc but it's not installed. Aborting." >&2
+	exit 1; }
+  command -v find >/dev/null 2>&1 || {
+	echo "I require find but it's not installed. Aborting." >&2
+	exit 1; }
+  command -v parallel >/dev/null 2>&1 || {
+	echo "I require parallel but it's not installed. Aborting." >&2
+	exit 1; }
+  command -v sqlite3 >/dev/null 2>&1 || {
+	echo "I require sqlite3 but it's not installed. Aborting." >&2
+	exit 1; }
+  command -v xargs >/dev/null 2>&1 || {
+	echo "I require xargs but it's not installed. Aborting." >&2
+	exit 1; }
 }
 
 do_clean() {
@@ -75,8 +95,11 @@ find_dbs() {
 }
 
 do_chromebased() {
-	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
+	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) ||
+		profilepath="$prepath"
+	[[ ! -d "$profilepath" ]] &&
+		echo -e ${RED}"Error: no profile directory for $name found.${NRM}" &&
+		exit 1
 	echo -e " ${YLW}Cleaning profile for $name${NRM}"
 	find_dbs "$profilepath"
 	do_clean_parallel
@@ -92,16 +115,19 @@ do_xulbased() {
 	fi
 
 	if [[ ! -d "$profilepath" ]]; then
-		echo -e ${RED}"Error: cannot locate $profilepath"${NRM}
-		echo -e ${BLD}"This is the default path for $name and where $0 expects to find it."${NRM}
+		echo -e ${RED}"Error: cannot locate $profilepath${NRM}"
+		echo -e ${BLD}"This is the default path for $name and where $0 expects to find it.${NRM}"
 		exit 1
 	fi
 
-	[[ ! -f $profilepath/profiles.ini ]] && echo -e ${RED}"Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name."${NRM} &&	exit 1
+	[[ ! -f $profilepath/profiles.ini ]] &&
+		echo -e ${RED}"Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name.${NRM}" &&
+		exit 1
 
 	#
 	# build an array correcting for rel and abs paths therein
-	# while read will read line-by-line and will tolerate spaces whereas a for loop will not
+	# while read will read line-by-line and will tolerate spaces
+	# whereas a for loop will not
 	#
 
 	index=0
@@ -122,8 +148,11 @@ do_xulbased() {
 }
 
 do_dbbased() {
-	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) || profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] &&	echo -e ${RED}"Error: no profile directory for $name found."${NRM} &&	exit 1
+	[[ -h "$prepath" ]] &&
+		profilepath=$(readlink $prepath) || profilepath="$prepath"
+	[[ ! -d "$profilepath" ]] &&
+		echo -e ${RED}"Error: no profile directory for $name found.${NRM}" &&
+		exit 1
 	echo -e " ${YLW}Cleaning profile for $name${NRM}"
 	find_dbs "${profilepath}"
 	do_clean_parallel
@@ -157,7 +186,7 @@ case "$1" in
 		prepath="$XDG_CONFIG_HOME"/$name
 		do_chromebased
 		exit 0
-		;;	
+		;;
 	F|f)
 		name="firefox"; export name
 		prepath=$HOME/.mozilla/$name
@@ -209,16 +238,16 @@ case "$1" in
 	*)
 		echo -e " ${BLD}$0 ${NRM}${GRN}{c|ck|f|gc|h|m|t|q|p}${NRM}"
 		echo
-		echo -e "  ${BLD}c) ${GRN}C${NRM}${BLD}hromium"${NRM}
-		echo -e " ${BLD}ck) ${GRN}C${NRM}${BLD}on${GRN}k${NRM}${BLD}eror"${NRM}
-		echo -e "  ${BLD}f) ${GRN}F${NRM}${BLD}irefox"${NRM}
-		echo -e " ${BLD}gc) ${GRN}G${NRM}${BLD}oogle ${GRN}C${NRM}${BLD}hrome"${NRM}
-		echo -e "  ${BLD}h) ${GRN}H${NRM}${BLD}eftig's Aurora"${NRM}
-		echo -e "  ${BLD}m) ${GRN}M${NRM}${BLD}idori"${NRM}
-		echo -e "  ${BLD}t) ${GRN}T${NRM}${BLD}hunderbird"${NRM}
-		echo -e "  ${BLD}q) ${GRN}Q${NRM}${BLD}upZilla"${NRM}
-		echo -e "  ${BLD}s) ${GRN}S${NRM}${BLD}eamonkey"${NRM}
-		echo -e "  ${BLD}p) ${GRN}P${NRM}${BLD}aths"${NRM}
+		echo -e "  ${BLD}c) ${GRN}C${NRM}${BLD}hromium${NRM}"
+		echo -e " ${BLD}ck) ${GRN}C${NRM}${BLD}on${GRN}k${NRM}${BLD}eror${NRM}"
+		echo -e "  ${BLD}f) ${GRN}F${NRM}${BLD}irefox${NRM}"
+		echo -e " ${BLD}gc) ${GRN}G${NRM}${BLD}oogle ${GRN}C${NRM}${BLD}hrome${NRM}"
+		echo -e "  ${BLD}h) ${GRN}H${NRM}${BLD}eftig's Aurora${NRM}"
+		echo -e "  ${BLD}m) ${GRN}M${NRM}${BLD}idori${NRM}"
+		echo -e "  ${BLD}t) ${GRN}T${NRM}${BLD}hunderbird${NRM}"
+		echo -e "  ${BLD}q) ${GRN}Q${NRM}${BLD}upZilla${NRM}"
+		echo -e "  ${BLD}s) ${GRN}S${NRM}${BLD}eamonkey${NRM}"
+		echo -e "  ${BLD}p) ${GRN}P${NRM}${BLD}aths${NRM}"
 		exit 0
 		;;
 esac
