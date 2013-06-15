@@ -31,3 +31,6 @@ USE A DISTRO PROVIDED PACKAGE
  FEDORA
  Fedora users may use the rpms provided by graysky at this url:
  http://repo-ck.com/bench.htm#Fedora_RPMs
+
+ VOID LINUX
+ Void users can download the package directly from the official repos.

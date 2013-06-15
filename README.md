@@ -8,6 +8,8 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 * ![logo](http://sec-wall.gefira.pl/media/gfx/logo-fedora.png "fedora logo")Fedora: http://repo-ck.com/bench.htm#Fedora_RPMs
 * ![logo](http://www.haskell.org/platform/icons/mint.png "mint logo")Mint: See instruction below
 * ![logo](http://www.monitorix.org/imgs/ubuntu.png "ubuntu logo")Ubuntu: See instructions below
+* ![logo](http://s23.postimg.org/5pabe2o5z/void_logo_transparent.png "void logo")Void: in the Void [repos](https://github.com/xtraeme/xbps-packages/tree/master/srcpkgs/profile-cleaner).
+
 
 ###Debian Users
 To add the PPA (personal package archive) to your Debian (tested on squeeze) system, and to install psd, do the following as the root user:
