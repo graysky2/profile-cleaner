@@ -32,5 +32,9 @@ USE A DISTRO PROVIDED PACKAGE
  Fedora users may use the rpms provided by graysky at this url:
  http://repo-ck.com/bench.htm#Fedora_RPMs
 
+ GENTOO
+ Gentoo users may use the ebuild provided by the laurentb overlay:
+ http://gpo.zugaina.org/Overlays/laurentb/app-admin/profile-cleaner
+
  VOID LINUX
  Void users can download the package directly from the official repos.
