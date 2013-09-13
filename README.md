@@ -6,10 +6,10 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 * ![logo](http://chakra-linux.org/img/icon/chakra-kde_32.png "chakra logo")Chakra via CCR Package: http://chakra-linux.org/ccr/packages.php?ID=4501
 * ![logo](http://freedos-32.sourceforge.net/lean/debian_logo.png "debian logo")Debian: See instruction below
 * ![logo](http://sec-wall.gefira.pl/media/gfx/logo-fedora.png "fedora logo")Fedora: http://repo-ck.com/bench.htm#Fedora_RPMs
+* ![logo](http://i.imgur.com/ooVjgFG.png "gentoo logo")Gentoo: See instructions below
 * ![logo](http://www.haskell.org/platform/icons/mint.png "mint logo")Mint: See instruction below
 * ![logo](http://www.monitorix.org/imgs/ubuntu.png "ubuntu logo")Ubuntu: See instructions below
 * ![logo](http://s23.postimg.org/5pabe2o5z/void_logo_transparent.png "void logo")Void: in the Void [repos](https://github.com/xtraeme/xbps-packages/tree/master/srcpkgs/profile-cleaner).
-* ![logo](http://i.imgur.com/ooVjgFG.png "gentoo logo")Gentoo: See instructions below
 
 
 ###Debian Users
@@ -20,6 +20,12 @@ To add the PPA (personal package archive) to your Debian (tested on squeeze) sys
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FF7F9516
     apt-get update
     apt-get install profile-cleaner
+
+###Gentoo Users
+To add the overlay to your Gentoo system:
+
+    layman -a laurentb
+    emerge profile-cleaner
 
 ###Mint Users
 To add the PPA (personal package archive) to your Mint system (tested on 14.1), and to install psd:
@@ -34,12 +40,6 @@ To add the PPA (personal package archive) to your Ubuntu (packages available for
     sudo add-apt-repository ppa:graysky/utils
     sudo apt-get update
     sudo apt-get install profile-cleaner
-
-##Gentoo Users
-To add the overlay to your Gentoo system:
-
-    layman -a laurentb
-    emerge profile-cleaner
 
 ###Other Distros
 If you are interested in packaging psd for your favorite distro, please contact me.
