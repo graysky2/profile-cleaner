@@ -30,7 +30,10 @@ else
 	echo "#COLORS=light" >> $config
 fi
 
-# if users screws up syntax, default to dark$
+#
+# if users screws up syntax, default to dark
+#
+
 [[ -z "$COLORS" ]] && COLORS="dark"
 [[ "$COLORS" = "dark" ]] && export BLD="\e[01m" \
 	RED="\e[01;31m" \
@@ -47,8 +50,11 @@ echo -e "${RED}profile-cleaner v$VERS${NRM}"
 echo
 
 dep_check() {
+	#
   # Although the package manager should handle these deps
 	# this function is a sanity check for users.
+	#
+
   command -v bc >/dev/null 2>&1 || {
 	echo "I require bc but it's not installed. Aborting." >&2
 	exit 1; }
@@ -89,7 +95,10 @@ do_clean_parallel () {
 }
 
 find_dbs() {
+	#
 	# fill to clean array by looking for SQLite files in each input directory
+	#
+	
 	toclean=()
 	while read i; do
 		toclean+=("${i}")
@@ -223,12 +232,14 @@ case "$1" in
 		name="torbrowser"; export name
 		prepath=$HOME/.$name/profile
 		
-		# AUR packages for tor-browser customize this for some reason
-		# so check for all in a silly for loop
-		# this is a shitty solution if users have more than 1 language
-		# of tor-browser installed
+		#
+		# AUR packages for tor-browser customize this for some reason so check for
+		# all in a silly for loop this is a shitty solution if users have more than
+		# 1 language of tor-browser installed
+		#
+		
 		for lang in de en es fr it ru; do
-			[[ ! -d "$prepath" ]] && 
+			[[ ! -d "$prepath" ]] &&
 			prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
 		done
 		do_dbbased
@@ -243,6 +254,12 @@ case "$1" in
 	N|n)
 		name="newsbeuter"; export name
 		prepath="$XDG_DATA_HOME/$name"
+
+		#
+		# gentoo uses a path for the db that differs from Arch so try both
+		#
+		
+		[[ ! -d "$prepath" ]] && prepath="$HOME/.$name"
 		do_dbbased
 		exit 0
 		;;

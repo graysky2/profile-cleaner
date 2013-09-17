@@ -1,5 +1,17 @@
 # Profile-cleaner
-Use profile-cleaner to reduce the size of browser profiles by organizing their sqlite databases using sqlite3's vacuum and reindex functions.
+Use profile-cleaner to reduce the size of browser profiles by organizing their sqlite databases using sqlite3's vacuum and reindex functions. The term "browser" is used loosely since profile-cleaner happily works on some email clients and newsreaders too.
+
+##Supported Browsers
+* Chromium
+* Conkeror
+* Firefox (stable,beta,aurora)
+* Google-chrome
+* Heftig's version of Aurora (https://bbs.archlinux.org/viewtopic.php?id=117157)
+* Midori
+* Newsbeuter
+* Seamonkey
+* Thunderbird
+* Tor-browser
 
 ##Packages by Distro
 * ![logo](http://www.monitorix.org/imgs/archlinux.png "arch logo")Arch via AUR Package: https://aur.archlinux.org/packages/profile-cleaner
