@@ -5,7 +5,7 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 * Chromium
 * Conkeror
 * Firefox (stable,beta,aurora)
-* Google-chrome
+* Google-chrome (stable,beta,dev)
 * Heftig's version of Aurora (https://bbs.archlinux.org/viewtopic.php?id=117157)
 * Midori
 * Newsbeuter
