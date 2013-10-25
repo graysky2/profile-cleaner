@@ -251,7 +251,7 @@ case "$1" in
 		do_xulbased
 		exit 0
 		;;
-	TOto)
+	TO|to)
 		name="torbrowser"; export name
 		prepath=$HOME/.$name/profile
 		
