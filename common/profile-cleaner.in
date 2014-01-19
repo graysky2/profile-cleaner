@@ -183,6 +183,7 @@ do_paths() {
 
 export -f do_clean
 dep_check
+GREP_OPTIONS=
 
 case "$1" in
 	C|c)

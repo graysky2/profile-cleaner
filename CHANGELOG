@@ -1,3 +1,7 @@
+v2.26
+19-Jan-2014
+Blank out GREP_OPTIONS.
+
 v2.25
 25-Oct-2013
 Added support for google-chrome-beta and -dev channel (kiwnix).
