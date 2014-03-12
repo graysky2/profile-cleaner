@@ -1,4 +1,4 @@
-VERSION = 2.26
+VERSION = 2.27
 PN = profile-cleaner
 
 PREFIX ?= /usr

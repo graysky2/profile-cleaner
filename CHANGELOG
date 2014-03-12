@@ -1,3 +1,7 @@
+v2.27
+12-Mar-2014
+Added support for icedove (sputnik27).
+
 v2.26
 19-Jan-2014
 Blank out GREP_OPTIONS.
