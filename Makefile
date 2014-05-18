@@ -31,6 +31,7 @@ uninstall:
 
 install: install-bin install-man
 
-clean: $(RM) -f common/$(PN)
+clean:
+	$(RM) -f common/$(PN)
 
 .PHONY: install-bin install-man uninstall install clean
