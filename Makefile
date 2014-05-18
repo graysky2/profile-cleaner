@@ -1,11 +1,11 @@
-VERSION = 2.28
+VERSION = 2.28.1
 PN = profile-cleaner
 
 PREFIX ?= /usr
 BINDIR = $(PREFIX)/bin
 MANDIR = $(PREFIX)/share/man/man1
 
-RM = @rm
+RM = rm
 SED = sed
 
 all:
