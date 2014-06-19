@@ -43,7 +43,7 @@ To add the PPA (personal package archive) to your Mint system (tested on 14.1), 
 
     sudo add-apt-repository ppa:graysky/utils
     sudo apt-get update
-    sudo apt-get install profile-sync-daemon
+    sudo apt-get install profile-cleaner
 
 ###Ubuntu Users
 To add the PPA (personal package archive) to your Ubuntu (packages available for Lucid and newer) system, and to install psd:
