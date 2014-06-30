@@ -72,7 +72,7 @@ If you are interested in packaging psd for your favorite distro, please contact 
 	Size after:  99.11 Mbytes
 
 	$ profile-cleaner f
-	
+
 	/home/facade/.mozilla/firefox/zee52krz.default/cookies.sqlite reduced by .87 Mbytes
 	/home/facade/.mozilla/firefox/zee52krz.default/signons.sqlite reduced by .41 Mbytes
 	/home/facade/.mozilla/firefox/zee52krz.default/downloads.sqlite reduced by .56 Mbytes

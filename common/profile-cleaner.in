@@ -74,10 +74,10 @@ dep_check() {
 do_clean() {
 	echo -en "${GRN} Cleaning${NRM} ${1##*/}"
 	bsize=$(du -b "$1" | cut -f 1)
-	
+
 	sqlite3 "$1" vacuum
 	sqlite3 "$1" reindex
-	
+
 	asize=$(du -b "$1" | cut -f 1)
 	dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
 	echo -e "$(tput cr)$(tput cuf 46) ${GRN}done${NRM}  -${YLW}${dsize}${NRM} Mbytes"
@@ -86,9 +86,9 @@ do_clean() {
 do_clean_parallel () {
 	[[ ${#toclean[@]} -eq 0 ]] && cleanedsize=0 && return 1
 	bsize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
-	
+
 	SHELL=/bin/bash parallel --gnu -k do_clean ::: "${toclean[@]}" 2>/dev/null
-	
+
 	asize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
 	cleanedsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
 }
@@ -97,7 +97,7 @@ find_dbs() {
 	#
 	# fill to clean array by looking for SQLite files in each input directory
 	#
-	
+
 	toclean=()
 	while read i; do
 		toclean+=("${i}")
@@ -273,13 +273,13 @@ case "$1" in
 	TO|to)
 		name="torbrowser"; export name
 		prepath=$HOME/.$name/profile
-		
+
 		#
 		# AUR packages for tor-browser customize this for some reason so check for
 		# all in a silly for loop this is a shitty solution if users have more than
 		# 1 language of tor-browser installed
 		#
-		
+
 		for lang in de en es fr it ru; do
 			[[ ! -d "$prepath" ]] &&
 			prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
@@ -300,7 +300,7 @@ case "$1" in
 		#
 		# gentoo uses a path for the db that differs from Arch so try both
 		#
-		
+
 		[[ ! -d "$prepath" ]] && prepath="$HOME/.$name"
 		do_dbbased
 		exit 0
