@@ -307,7 +307,7 @@ case "$1" in
 		;;
 	Q|q)
 		name="qupzilla"; export name
-		prepath=$HOME/.$name/profiles
+		prepath=$HOME/.config/$name/profiles
 		do_dbbased
 		exit 0
 		;;
