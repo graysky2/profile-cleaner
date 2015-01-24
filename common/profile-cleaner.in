@@ -45,7 +45,7 @@ fi
 	YLW="\e[00;34m" \
 	NRM="\e[00m"
 
-echo -e "${RED}profile-cleaner v$VERS${NRM}"
+echo -e "${BLD}profile-cleaner v$VERS${NRM}"
 echo
 
 dep_check() {
