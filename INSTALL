@@ -1,5 +1,5 @@
 DEPENDENCIES
- bash
+ bash>4
  bc
  findutils
  parallel
