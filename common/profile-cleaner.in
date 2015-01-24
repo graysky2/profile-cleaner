@@ -186,6 +186,12 @@ dep_check
 GREP_OPTIONS=
 
 case "$1" in
+	H|h)
+		name="aurora"; export name
+		prepath=$HOME/.mozilla/aurora
+		do_xulbased
+		exit 0
+		;;
 	C|c)
 		name="chromium" ; export name
 		prepath="$XDG_CONFIG_HOME"/$name
@@ -202,6 +208,18 @@ case "$1" in
 		name="chromium-dev" ; export name
 		prepath="$XDG_CONFIG_HOME"/$name
 		do_chromebased
+		exit 0
+		;;
+	CK|ck)
+		name="conkeror"; export name
+		prepath=$HOME/.conkeror.mozdev.org/$name
+		do_xulbased
+		exit 0
+		;;
+	F|f)
+		name="firefox"; export name
+		prepath=$HOME/.mozilla/$name
+		do_xulbased
 		exit 0
 		;;
 	GC|gc)
@@ -222,42 +240,6 @@ case "$1" in
 		do_chromebased
 		exit 0
 		;;
-	PM|pm)
-		name="palemoon"; export name
-		prepath=$HOME/.moonchild\ productions/pale\ moon
-		do_xulbased
-		exit 0
-		;;
-	F|f)
-		name="firefox"; export name
-		prepath=$HOME/.mozilla/$name
-		do_xulbased
-		exit 0
-		;;
-	CK|ck)
-		name="conkeror"; export name
-		prepath=$HOME/.conkeror.mozdev.org/$name
-		do_xulbased
-		exit 0
-		;;
-	H|h)
-		name="aurora"; export name
-		prepath=$HOME/.mozilla/aurora
-		do_xulbased
-		exit 0
-		;;
-	S|s)
-		name="seamonkey"; export name
-		prepath=$HOME/.mozilla/$name
-		do_xulbased
-		exit 0
-		;;
-	T|t)
-		name="thunderbird"; export name
-		prepath=$HOME/.$name
-		do_xulbased
-		exit 0
-		;;
 	I|i)
 		name="icecat"; export name
 		prepath=$HOME/.mozilla/$name
@@ -268,23 +250,6 @@ case "$1" in
 		name="icedove"; export name
 		prepath=$HOME/.$name
 		do_xulbased
-		exit 0
-		;;
-	TO|to)
-		name="torbrowser"; export name
-		prepath=$HOME/.$name/profile
-
-		#
-		# AUR packages for tor-browser customize this for some reason so check for
-		# all in a silly for loop this is a shitty solution if users have more than
-		# 1 language of tor-browser installed
-		#
-
-		for lang in de en es fr it ru; do
-			[[ ! -d "$prepath" ]] &&
-			prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
-		done
-		do_dbbased
 		exit 0
 		;;
 	M|m)
@@ -305,16 +270,51 @@ case "$1" in
 		do_dbbased
 		exit 0
 		;;
-	Q|q)
-		name="qupzilla"; export name
-		prepath=$HOME/.config/$name/profiles
-		do_dbbased
+	PM|pm)
+		name="palemoon"; export name
+		prepath=$HOME/.moonchild\ productions/pale\ moon
+		do_xulbased
 		exit 0
 		;;
 	P|p)
 		name="paths"; export name
 		shift
 		do_paths "$@"
+		exit 0
+		;;
+	S|s)
+		name="seamonkey"; export name
+		prepath=$HOME/.mozilla/$name
+		do_xulbased
+		exit 0
+		;;
+	Q|q)
+		name="qupzilla"; export name
+		prepath=$HOME/.config/$name/profiles
+		do_dbbased
+		exit 0
+		;;
+	T|t)
+		name="thunderbird"; export name
+		prepath=$HOME/.$name
+		do_xulbased
+		exit 0
+		;;
+	TO|to)
+		name="torbrowser"; export name
+		prepath=$HOME/.$name/profile
+
+		#
+		# AUR packages for tor-browser customize this for some reason so check for
+		# all in a silly for loop this is a shitty solution if users have more than
+		# 1 language of tor-browser installed
+		#
+
+		for lang in de en es fr it ru; do
+			[[ ! -d "$prepath" ]] &&
+			prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
+		done
+		do_dbbased
 		exit 0
 		;;
 	*)
