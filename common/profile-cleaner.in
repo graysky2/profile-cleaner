@@ -107,9 +107,10 @@ find_dbs() {
 do_chromebased() {
 	[[ -h "$prepath" ]] && profilepath=$(readlink $prepath) ||
 		profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] &&
-		echo -e ${RED}"Error: no profile directory for $name found.${NRM}" &&
+	if [[ ! -d "$profilepath" ]]; then
+		echo -e ${RED}"Error: no profile directory for $name found.${NRM}"
 		exit 1
+	fi
 	echo -e " ${YLW}Cleaning profile for $name${NRM}"
 	find_dbs "$profilepath"
 	do_clean_parallel
