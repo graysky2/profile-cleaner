@@ -54,7 +54,7 @@ dep_check() {
 	# this function is a sanity check for users.
 	#
 
-  command -v bc >/dev/null 2>&1 || {
+	command -v bc >/dev/null 2>&1 || {
 	echo "I require bc but it's not installed. Aborting." >&2
 	exit 1; }
 	command -v find >/dev/null 2>&1 || {
@@ -217,7 +217,7 @@ case "$1" in
 		for name in google-chrome google-chrome-beta google-chrome-unstable; do
 			export name
 			prepath="$XDG_CONFIG_HOME"/$name
-			[[ -d "$XDG_CONFIG_HOME"/$name ]] && 	do_chromebased
+			[[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
 		done
 		exit 0
 		;;
@@ -301,7 +301,7 @@ case "$1" in
 
 		for lang in de en es fr it ru; do
 			[[ ! -d "$prepath" ]] &&
-			prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
+				prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
 		done
 		do_dbbased
 		exit 0
@@ -313,7 +313,7 @@ case "$1" in
 		echo -e "   ${BLD}f) ${GRN}f${NRM}${BLD}irefox (stable and beta)${NRM}"
 		echo -e "  ${BLD}gc) ${GRN}g${NRM}${BLD}oogle-${GRN}c${NRM}${BLD}hrome (stable, beta, and dev)${NRM}"
 		echo -e "   ${BLD}o) ${GRN}o${NRM}${BLD}pera (stable, next, and developer)${NRM}"
-		echo	
+		echo
 		echo -e "  ${BLD}ck) ${GRN}c${NRM}${BLD}on${GRN}k${NRM}${BLD}eror${NRM}"
 		echo -e "   ${BLD}h) ${GRN}h${NRM}${BLD}eftig's aurora${NRM}"
 		echo -e "   ${BLD}i) ${GRN}i${NRM}${BLD}cecat${NRM}"
