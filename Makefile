@@ -1,9 +1,10 @@
-VERSION = 2.33
+VERSION = 2.34
 PN = profile-cleaner
 
 PREFIX ?= /usr
 BINDIR = $(PREFIX)/bin
 MANDIR = $(PREFIX)/share/man/man1
+ZSHDIR = $(PREFIX)/share/zsh/site-functions
 
 RM = rm
 SED = sed
@@ -16,6 +17,8 @@ install-bin:
 	@echo -e '\033[1;32mInstalling main script, initd and config...\033[0m'
 	install -Dm755 common/$(PN) "$(DESTDIR)$(BINDIR)/$(PN)"
 	ln -s $(PN) "$(DESTDIR)$(BINDIR)/pc"
+	install -d "$(DESTDIR)$(ZSHDIR)"
+	install -m644 common/zsh-completion "$(DESTDIR)/$(ZSHDIR)/_pc"
 
 install-man:
 	@echo -e '\033[1;32mInstalling manpage...\033[0m'
@@ -28,6 +31,7 @@ uninstall:
 	$(RM) "$(DESTDIR)$(BINDIR)/pc"
 	$(RM) "$(DESTDIR)$(MANDIR)/$(PN).1.gz"
 	$(RM) "$(DESTDIR)$(MANDIR)/pc.1.gz"
+	$(RM) "$(DESTDIR)/$(ZSHDIR)/_pc"
 
 install: install-bin install-man
 

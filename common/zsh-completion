@@ -1,0 +1,26 @@
+#compdef pc profile-cleaner
+
+_pc() {
+	local -a options
+
+	options=('c:Chromium (stable, beta, and dev)'
+	'f:Firefox (stable and beta)'
+	'gc:Google-Chrome (stable, beta, and dev)'
+	'o:Opera (stable, next, and developer)'
+	'ck:ConKeror'
+	'h:Heftigs aurora'
+	'i:Icecat'
+	'id:IceDove'
+	'm:Midori'
+	'n:Newsbeuter'
+	'pm:PaleMoon'
+	'q:QupZilla'
+	's:Seamonkey'
+	't:Thunderbird'
+	'to:TOrbrowser'
+	'p:Paths')
+
+	_describe 'options' options
+}
+
+_pc
