@@ -233,6 +233,12 @@ case "$1" in
 		do_xulbased
 		exit 0
 		;;
+	ix|IX)
+		name="inox"; export name
+		prepath="$XDG_CONFIG_HOME"/$name
+		[[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
+		exit 0
+		;;
 	M|m)
 		name="midori"; export name
 		prepath="$XDG_CONFIG_HOME"/$name
@@ -318,6 +324,7 @@ case "$1" in
 		echo -e "   ${BLD}h) ${GRN}h${NRM}${BLD}eftig's aurora${NRM}"
 		echo -e "   ${BLD}i) ${GRN}i${NRM}${BLD}cecat${NRM}"
 		echo -e "  ${BLD}id) ${GRN}i${NRM}${BLD}ce${GRN}d${NRM}${BLD}ove${NRM}"
+		echo -e "  ${BLD}ix) ${GRN}i${NRM}${BLD}no${GRN}x${NRM}"
 		echo -e "   ${BLD}m) ${GRN}m${NRM}${BLD}idori${NRM}"
 		echo -e "   ${BLD}n) ${GRN}n${NRM}${BLD}ewsbeuter${NRM}"
 		echo -e "  ${BLD}pm) ${GRN}p${NRM}${BLD}ale${GRN}m${NRM}${BLD}oon${NRM}"
