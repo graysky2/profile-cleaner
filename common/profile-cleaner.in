@@ -283,6 +283,14 @@ case "$1" in
 		do_xulbased
 		exit 0
 		;;
+	FS|fs)
+		for name in slimjet; do
+			export name
+			prepath="$XDG_CONFIG_HOME"/$name
+			[[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
+		done
+		exit 0
+		;;
 	Q|q)
 		name="qupzilla"; export name
 		prepath=$HOME/.config/$name/profiles
@@ -330,6 +338,7 @@ case "$1" in
 		echo -e "  ${BLD}pm) ${GRN}p${NRM}${BLD}ale${GRN}m${NRM}${BLD}oon${NRM}"
 		echo -e "   ${BLD}q) ${GRN}q${NRM}${BLD}upZilla${NRM}"
 		echo -e "   ${BLD}s) ${GRN}s${NRM}${BLD}eamonkey${NRM}"
+		echo -e "  ${BLD}fs) ${GRN}f${NRM}${BLD}lashpeak ${GRN}s${NRM}${BLD}limjet${NRM}"
 		echo -e "   ${BLD}t) ${GRN}t${NRM}${BLD}hunderbird${NRM}"
 		echo -e "  ${BLD}to) ${GRN}to${NRM}${BLD}rbrowser${NRM}"
 		echo
