@@ -16,17 +16,17 @@ XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 config="$XDG_CONFIG_HOME/profile-cleaner.conf"
 
 if [[ -f "$config" ]]; then
-	. "$config"
+  . "$config"
 else
-	echo "#" > "$config"
-	echo "# $HOME/.config/profile-cleaner.conf" >> "$config"
-	echo "#" >> "$config"
-	echo >> "$config"
-	echo "# Define the background of your terminal theme here." >> "$config"
-	echo "# A setting of "dark" will produce colors that nicely contrast a dark background." >> "$config"
-	echo "# A setting of "light" will produce colors that nicely contrast a light background." >> "$config"
-	echo "COLORS=dark" >> "$config"
-	echo "#COLORS=light" >> "$config"
+  echo "#" > "$config"
+  echo "# $HOME/.config/profile-cleaner.conf" >> "$config"
+  echo "#" >> "$config"
+  echo >> "$config"
+  echo "# Define the background of your terminal theme here." >> "$config"
+  echo "# A setting of "dark" will produce colors that nicely contrast a dark background." >> "$config"
+  echo "# A setting of "light" will produce colors that nicely contrast a light background." >> "$config"
+  echo "COLORS=dark" >> "$config"
+  echo "#COLORS=light" >> "$config"
 fi
 
 #
@@ -35,151 +35,151 @@ fi
 
 [[ -z "$COLORS" ]] && COLORS="dark"
 [[ "$COLORS" = "dark" ]] && export BLD="\e[01m" \
-	RED="\e[01;31m" \
-	GRN="\e[01;32m" \
-	YLW="\e[01;33m" \
-	NRM="\e[00m"
+  RED="\e[01;31m" \
+  GRN="\e[01;32m" \
+  YLW="\e[01;33m" \
+  NRM="\e[00m"
 [[ "$COLORS" = "light" ]] && export BLD="\e[01m" \
-	RED="\e[00;31m" \
-	GRN="\e[00;32m" \
-	YLW="\e[00;34m" \
-	NRM="\e[00m"
+  RED="\e[00;31m" \
+  GRN="\e[00;32m" \
+  YLW="\e[00;34m" \
+  NRM="\e[00m"
 
 echo -e "${BLD}profile-cleaner v$VERS${NRM}"
 echo
 
 dep_check() {
-	#
-	# Although the package manager should handle these deps
-	# this function is a sanity check for users.
-	#
+  #
+  # Although the package manager should handle these deps
+  # this function is a sanity check for users.
+  #
 
-	command -v bc >/dev/null 2>&1 || {
-	echo "I require bc but it's not installed. Aborting." >&2
-	exit 1; }
-	command -v find >/dev/null 2>&1 || {
-	echo "I require find but it's not installed. Aborting." >&2
-	exit 1; }
-	command -v parallel >/dev/null 2>&1 || {
-	echo "I require parallel but it's not installed. Aborting." >&2
-	exit 1; }
-	command -v sqlite3 >/dev/null 2>&1 || {
-	echo "I require sqlite3 but it's not installed. Aborting." >&2
-	exit 1; }
-	command -v xargs >/dev/null 2>&1 || {
-	echo "I require xargs but it's not installed. Aborting." >&2
-	exit 1; }
+  command -v bc >/dev/null 2>&1 || {
+  echo "I require bc but it's not installed. Aborting." >&2
+  exit 1; }
+  command -v find >/dev/null 2>&1 || {
+  echo "I require find but it's not installed. Aborting." >&2
+  exit 1; }
+  command -v parallel >/dev/null 2>&1 || {
+  echo "I require parallel but it's not installed. Aborting." >&2
+  exit 1; }
+  command -v sqlite3 >/dev/null 2>&1 || {
+  echo "I require sqlite3 but it's not installed. Aborting." >&2
+  exit 1; }
+  command -v xargs >/dev/null 2>&1 || {
+  echo "I require xargs but it's not installed. Aborting." >&2
+  exit 1; }
 }
 
 do_clean() {
-	echo -en "${GRN} Cleaning${NRM} ${1##*/}"
-	bsize=$(du -b "$1" | cut -f 1)
+  echo -en "${GRN} Cleaning${NRM} ${1##*/}"
+  bsize=$(du -b "$1" | cut -f 1)
 
-	sqlite3 "$1" vacuum
-	sqlite3 "$1" reindex
+  sqlite3 "$1" vacuum
+  sqlite3 "$1" reindex
 
-	asize=$(du -b "$1" | cut -f 1)
-	dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
-	echo -e "$(tput cr)$(tput cuf 46) ${GRN}done${NRM}  -${YLW}${dsize}${NRM} Mbytes"
+  asize=$(du -b "$1" | cut -f 1)
+  dsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
+  echo -e "$(tput cr)$(tput cuf 46) ${GRN}done${NRM}  -${YLW}${dsize}${NRM} Mbytes"
 }
 
 do_clean_parallel () {
-	[[ ${#toclean[@]} -eq 0 ]] && cleanedsize=0 && return 1
-	bsize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
+  [[ ${#toclean[@]} -eq 0 ]] && cleanedsize=0 && return 1
+  bsize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
 
-	SHELL=/bin/bash parallel --gnu -k do_clean ::: "${toclean[@]}" 2>/dev/null
+  SHELL=/bin/bash parallel --gnu -k do_clean ::: "${toclean[@]}" 2>/dev/null
 
-	asize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
-	cleanedsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
+  asize=$(du -b -c "${toclean[@]}" | tail -n 1 | cut -f 1)
+  cleanedsize=$(echo "scale=2; ($bsize-$asize)/1048576" | bc)
 }
 
 find_dbs() {
-	#
-	# fill to clean array by looking for SQLite files in each input directory
-	#
+  #
+  # fill to clean array by looking for SQLite files in each input directory
+  #
 
-	toclean=()
-	while read -r i; do
-		toclean+=("${i}")
-	done < <( find -L "$@" -maxdepth 2 -type f -not -name '*.sqlite-wal' -print0 2>/dev/null | xargs -0 file -e ascii | sed -n -e "s/:.*SQLite.*//p" )
+  toclean=()
+  while read -r i; do
+    toclean+=("${i}")
+  done < <( find -L "$@" -maxdepth 2 -type f -not -name '*.sqlite-wal' -print0 2>/dev/null | xargs -0 file -e ascii | sed -n -e "s/:.*SQLite.*//p" )
 }
 
 do_chromebased() {
-	[[ -h "$prepath" ]] && profilepath=$(readlink "$prepath") ||
-		profilepath="$prepath"
-	if [[ ! -d "$profilepath" ]]; then
-		echo -e "${RED}Error: no profile directory for $name found.${NRM}"
-		exit 1
-	fi
-	echo -e " ${YLW}Cleaning profile for $name${NRM}"
-	find_dbs "$profilepath"
-	do_clean_parallel
-	echo
-	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
+  [[ -h "$prepath" ]] && profilepath=$(readlink "$prepath") ||
+    profilepath="$prepath"
+  if [[ ! -d "$profilepath" ]]; then
+    echo -e "${RED}Error: no profile directory for $name found.${NRM}"
+    exit 1
+  fi
+  echo -e " ${YLW}Cleaning profile for $name${NRM}"
+  find_dbs "$profilepath"
+  do_clean_parallel
+  echo
+  echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
 }
 
 do_xulbased() {
-	if [[ -h "$prepath" ]]; then
-		profilepath=$(readlink "$prepath")
-	else
-		profilepath="$prepath"
-	fi
+  if [[ -h "$prepath" ]]; then
+    profilepath=$(readlink "$prepath")
+  else
+    profilepath="$prepath"
+  fi
 
-	if [[ ! -d "$profilepath" ]]; then
-		echo -e "${RED}Error: cannot locate $profilepath${NRM}"
-		echo -e "${BLD}This is the default path for $name and where $0 expects to find it.${NRM}"
-		exit 1
-	fi
+  if [[ ! -d "$profilepath" ]]; then
+    echo -e "${RED}Error: cannot locate $profilepath${NRM}"
+    echo -e "${BLD}This is the default path for $name and where $0 expects to find it.${NRM}"
+    exit 1
+  fi
 
-	[[ ! -f $profilepath/profiles.ini ]] &&
-		echo -e "${RED}Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name.${NRM}" &&
-		exit 1
+  [[ ! -f $profilepath/profiles.ini ]] &&
+    echo -e "${RED}Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name.${NRM}" &&
+    exit 1
 
-	#
-	# build an array correcting for rel and abs paths therein
-	# while read -r will read line-by-line and will tolerate spaces
-	# whereas a for loop will not
-	#
+  #
+  # build an array correcting for rel and abs paths therein
+  # while read -r will read line-by-line and will tolerate spaces
+  # whereas a for loop will not
+  #
 
-	index=0
-	while read -r line; do
-		if [[ ! -d "$profilepath/$line" ]]; then
-			finalArr[index]="$line"
-		else
-			finalArr[index]="$profilepath/$line"
-		fi
-		index=$index+1
-	done < <(grep '[P,p]'ath "$profilepath/profiles.ini" | sed -e 's/[P,p]ath=//' -e 's/\r//' )
+  index=0
+  while read -r line; do
+    if [[ ! -d "$profilepath/$line" ]]; then
+      finalArr[index]="$line"
+    else
+      finalArr[index]="$profilepath/$line"
+    fi
+    index=$index+1
+  done < <(grep '[P,p]'ath "$profilepath/profiles.ini" | sed -e 's/[P,p]ath=//' -e 's/\r//' )
 
-	echo -e " ${YLW}Cleaning profile for $name${NRM}"
-	find_dbs "${finalArr[@]}"
-	do_clean_parallel
-	echo
-	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
+  echo -e " ${YLW}Cleaning profile for $name${NRM}"
+  find_dbs "${finalArr[@]}"
+  do_clean_parallel
+  echo
+  echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
 }
 
 do_dbbased() {
-	[[ -h "$prepath" ]] &&
-		profilepath=$(readlink "$prepath") || profilepath="$prepath"
-	[[ ! -d "$profilepath" ]] &&
-		echo -e "${RED}Error: no profile directory for $name found.${NRM}" &&
-		exit 1
-	echo -e " ${YLW}Cleaning profile for $name${NRM}"
-	find_dbs "${profilepath}"
-	do_clean_parallel
-	echo
-	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
+  [[ -h "$prepath" ]] &&
+    profilepath=$(readlink "$prepath") || profilepath="$prepath"
+  [[ ! -d "$profilepath" ]] &&
+    echo -e "${RED}Error: no profile directory for $name found.${NRM}" &&
+    exit 1
+  echo -e " ${YLW}Cleaning profile for $name${NRM}"
+  find_dbs "${profilepath}"
+  do_clean_parallel
+  echo
+  echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
 }
 
 do_paths() {
-	profilepaths=()
-	for profilepath in "$@"; do
-		[[ -d "$profilepath" ]] && profilepaths+=("$profilepath")
-	done
-	find_dbs "${profilepaths[@]}"
-	do_clean_parallel
-	echo
-	echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
+  profilepaths=()
+  for profilepath in "$@"; do
+    [[ -d "$profilepath" ]] && profilepaths+=("$profilepath")
+  done
+  find_dbs "${profilepaths[@]}"
+  do_clean_parallel
+  echo
+  echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
 }
 
 export -f do_clean
@@ -187,153 +187,155 @@ dep_check
 GREP_OPTIONS=
 
 case "$1" in
-	H|h)
-		name="aurora"; export name
-		prepath=$HOME/.mozilla/aurora
-		do_xulbased
-		exit 0
-		;;
-	C|c|CB|cb|CD|cd)
-		for name in chromium chromium-beta chromium-dev; do
-			export name
-			prepath="$XDG_CONFIG_HOME"/$name
-			[[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
-		done
-		exit 0
-		;;
-	CK|ck)
-		name="conkeror"; export name
-		prepath=$HOME/.conkeror.mozdev.org/$name
-		do_xulbased
-		exit 0
-		;;
-	F|f)
-		name="firefox"; export name
-		prepath=$HOME/.mozilla/$name
-		do_xulbased
-		exit 0
-		;;
-	GC|gc|GCB|gcb|GCD|gcd|GCU|gcu)
-		for name in google-chrome google-chrome-beta google-chrome-unstable; do
-			export name
-			prepath="$XDG_CONFIG_HOME"/$name
-			[[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
-		done
-		exit 0
-		;;
-	I|i)
-		name="icecat"; export name
-		prepath=$HOME/.mozilla/$name
-		do_xulbased
-		exit 0
-		;;
-	ID|id)
-		name="icedove"; export name
-		prepath=$HOME/.$name
-		do_xulbased
-		exit 0
-		;;
-	ix|IX)
-		name="inox"; export name
-		prepath="$XDG_CONFIG_HOME"/$name
-		[[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
-		exit 0
-		;;
-	M|m)
-		name="midori"; export name
-		prepath="$XDG_CONFIG_HOME"/$name
-		do_dbbased
-		exit 0
-		;;
-	N|n)
-		name="newsbeuter"; export name
-		prepath="$XDG_DATA_HOME/$name"
+  H|h)
+    name="aurora"; export name
+    prepath=$HOME/.mozilla/aurora
+    do_xulbased
+    exit 0
+    ;;
+  C|c|CB|cb|CD|cd)
+    for name in chromium chromium-beta chromium-dev; do
+      export name
+      prepath="$XDG_CONFIG_HOME"/$name
+      [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
+    done
+    exit 0
+    ;;
+  CK|ck)
+    name="conkeror"; export name
+    prepath=$HOME/.conkeror.mozdev.org/$name
+    do_xulbased
+    exit 0
+    ;;
+  F|f)
+    name="firefox"; export name
+    prepath=$HOME/.mozilla/$name
+    do_xulbased
+    exit 0
+    ;;
+  GC|gc|GCB|gcb|GCD|gcd|GCU|gcu)
+    for name in google-chrome google-chrome-beta google-chrome-unstable; do
+      export name
+      prepath="$XDG_CONFIG_HOME"/$name
+      [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
+    done
+    exit 0
+    ;;
+  I|i)
+    name="icecat"; export name
+    prepath=$HOME/.mozilla/$name
+    do_xulbased
+    exit 0
+    ;;
+  ID|id)
+    name="icedove"; export name
+    prepath=$HOME/.$name
+    do_xulbased
+    exit 0
+    ;;
+  ix|IX)
+    name="inox"; export name
+    prepath="$XDG_CONFIG_HOME"/$name
+    [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
+    exit 0
+    ;;
+  M|m)
+    name="midori"; export name
+    prepath="$XDG_CONFIG_HOME"/$name
+    do_dbbased
+    exit 0
+    ;;
+  N|n)
+    name="newsbeuter"; export name
+    prepath="$XDG_DATA_HOME/$name"
 
-		#
-		# gentoo uses a path for the db that differs from Arch so try both
-		#
+    #
+    # gentoo uses a path for the db that differs from Arch so try both
+    #
 
-		[[ ! -d "$prepath" ]] && prepath="$HOME/.$name"
-		do_dbbased
-		exit 0
-		;;
-	o|O|on|ON|od|OD|ob|OB)
-		for name in opera opera-next opera-developer opera-beta; do
-			export name
-			prepath="$XDG_CONFIG_HOME"/$name
-			[[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
-		done
-		exit 0
-		;;
-	PM|pm)
-		name="palemoon"; export name
-		prepath=$HOME/.moonchild\ productions/pale\ moon
-		do_xulbased
-		exit 0
-		;;
-	P|p)
-		name="paths"; export name
-		shift
-		do_paths "$@"
-		exit 0
-		;;
-	S|s)
-		name="seamonkey"; export name
-		prepath=$HOME/.mozilla/$name
-		do_xulbased
-		exit 0
-		;;
-	Q|q)
-		name="qupzilla"; export name
-		prepath=$HOME/.config/$name/profiles
-		do_dbbased
-		exit 0
-		;;
-	T|t)
-		name="thunderbird"; export name
-		prepath=$HOME/.$name
-		do_xulbased
-		exit 0
-		;;
-	TO|to)
-		name="torbrowser"; export name
-		prepath=$HOME/.$name/profile
+    [[ ! -d "$prepath" ]] && prepath="$HOME/.$name"
+    do_dbbased
+    exit 0
+    ;;
+  o|O|on|ON|od|OD|ob|OB)
+    for name in opera opera-next opera-developer opera-beta; do
+      export name
+      prepath="$XDG_CONFIG_HOME"/$name
+      [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
+    done
+    exit 0
+    ;;
+  PM|pm)
+    name="palemoon"; export name
+    prepath=$HOME/.moonchild\ productions/pale\ moon
+    do_xulbased
+    exit 0
+    ;;
+  P|p)
+    name="paths"; export name
+    shift
+    do_paths "$@"
+    exit 0
+    ;;
+  S|s)
+    name="seamonkey"; export name
+    prepath=$HOME/.mozilla/$name
+    do_xulbased
+    exit 0
+    ;;
+  Q|q)
+    name="qupzilla"; export name
+    prepath=$HOME/.config/$name/profiles
+    do_dbbased
+    exit 0
+    ;;
+  T|t)
+    name="thunderbird"; export name
+    prepath=$HOME/.$name
+    do_xulbased
+    exit 0
+    ;;
+  TO|to)
+    name="torbrowser"; export name
+    prepath=$HOME/.$name/profile
 
-		#
-		# AUR packages for tor-browser customize this for some reason so check for
-		# all in a silly for loop this is a shitty solution if users have more than
-		# 1 language of tor-browser installed
-		#
+    #
+    # AUR packages for tor-browser customize this for some reason so check for
+    # all in a silly for loop this is a shitty solution if users have more than
+    # 1 language of tor-browser installed
+    #
 
-		for lang in de en es fr it ru; do
-			[[ ! -d "$prepath" ]] &&
-				prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
-		done
-		do_dbbased
-		exit 0
-		;;
-	*)
-		echo -e " ${BLD}$0 ${NRM}${GRN}{browser abbreviation}${NRM}"
-		echo
-		echo -e "   ${BLD}c) ${GRN}c${NRM}${BLD}hromium (stable, beta, and dev)${NRM}"
-		echo -e "   ${BLD}f) ${GRN}f${NRM}${BLD}irefox (stable and beta)${NRM}"
-		echo -e "  ${BLD}gc) ${GRN}g${NRM}${BLD}oogle-${GRN}c${NRM}${BLD}hrome (stable, beta, and dev)${NRM}"
-		echo -e "   ${BLD}o) ${GRN}o${NRM}${BLD}pera (stable, next, and developer)${NRM}"
-		echo
-		echo -e "  ${BLD}ck) ${GRN}c${NRM}${BLD}on${GRN}k${NRM}${BLD}eror${NRM}"
-		echo -e "   ${BLD}h) ${GRN}h${NRM}${BLD}eftig's aurora${NRM}"
-		echo -e "   ${BLD}i) ${GRN}i${NRM}${BLD}cecat${NRM}"
-		echo -e "  ${BLD}id) ${GRN}i${NRM}${BLD}ce${GRN}d${NRM}${BLD}ove${NRM}"
-		echo -e "  ${BLD}ix) ${GRN}i${NRM}${BLD}no${GRN}x${NRM}"
-		echo -e "   ${BLD}m) ${GRN}m${NRM}${BLD}idori${NRM}"
-		echo -e "   ${BLD}n) ${GRN}n${NRM}${BLD}ewsbeuter${NRM}"
-		echo -e "  ${BLD}pm) ${GRN}p${NRM}${BLD}ale${GRN}m${NRM}${BLD}oon${NRM}"
-		echo -e "   ${BLD}q) ${GRN}q${NRM}${BLD}upZilla${NRM}"
-		echo -e "   ${BLD}s) ${GRN}s${NRM}${BLD}eamonkey${NRM}"
-		echo -e "   ${BLD}t) ${GRN}t${NRM}${BLD}hunderbird${NRM}"
-		echo -e "  ${BLD}to) ${GRN}to${NRM}${BLD}rbrowser${NRM}"
-		echo
-		echo -e "   ${BLD}p) ${GRN}p${NRM}${BLD}aths${NRM}"
-		exit 0
-		;;
+    for lang in de en es fr it ru; do
+      [[ ! -d "$prepath" ]] &&
+        prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
+    done
+    do_dbbased
+    exit 0
+    ;;
+  *)
+    echo -e " ${BLD}$0 ${NRM}${GRN}{browser abbreviation}${NRM}"
+    echo
+    echo -e "   ${BLD}c) ${GRN}c${NRM}${BLD}hromium (stable, beta, and dev)${NRM}"
+    echo -e "   ${BLD}f) ${GRN}f${NRM}${BLD}irefox (stable and beta)${NRM}"
+    echo -e "  ${BLD}gc) ${GRN}g${NRM}${BLD}oogle-${GRN}c${NRM}${BLD}hrome (stable, beta, and dev)${NRM}"
+    echo -e "   ${BLD}o) ${GRN}o${NRM}${BLD}pera (stable, next, and developer)${NRM}"
+    echo
+    echo -e "  ${BLD}ck) ${GRN}c${NRM}${BLD}on${GRN}k${NRM}${BLD}eror${NRM}"
+    echo -e "   ${BLD}h) ${GRN}h${NRM}${BLD}eftig's aurora${NRM}"
+    echo -e "   ${BLD}i) ${GRN}i${NRM}${BLD}cecat${NRM}"
+    echo -e "  ${BLD}id) ${GRN}i${NRM}${BLD}ce${GRN}d${NRM}${BLD}ove${NRM}"
+    echo -e "  ${BLD}ix) ${GRN}i${NRM}${BLD}no${GRN}x${NRM}"
+    echo -e "   ${BLD}m) ${GRN}m${NRM}${BLD}idori${NRM}"
+    echo -e "   ${BLD}n) ${GRN}n${NRM}${BLD}ewsbeuter${NRM}"
+    echo -e "  ${BLD}pm) ${GRN}p${NRM}${BLD}ale${GRN}m${NRM}${BLD}oon${NRM}"
+    echo -e "   ${BLD}q) ${GRN}q${NRM}${BLD}upZilla${NRM}"
+    echo -e "   ${BLD}s) ${GRN}s${NRM}${BLD}eamonkey${NRM}"
+    echo -e "   ${BLD}t) ${GRN}t${NRM}${BLD}hunderbird${NRM}"
+    echo -e "  ${BLD}to) ${GRN}to${NRM}${BLD}rbrowser${NRM}"
+    echo
+    echo -e "   ${BLD}p) ${GRN}p${NRM}${BLD}aths${NRM}"
+    exit 0
+    ;;
 esac
+
+# vim:set ts=2 sw=2 et:
