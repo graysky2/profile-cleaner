@@ -1,7 +1,7 @@
 # Profile-cleaner
 Use profile-cleaner to reduce the size of browser profiles by organizing their sqlite databases using sqlite3's vacuum and reindex functions. The term "browser" is used loosely since profile-cleaner happily works on some email clients and newsreaders too.
 
-##Supported Browsers
+## Supported Browsers
 * Aurora
 * Chromium (stable, beta, and dev)
 * Conkeror
@@ -18,7 +18,7 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 * Thunderbird
 * Tor-browser
 
-##Packages by Distro
+## Packages by Distro
 * ![logo](http://www.monitorix.org/imgs/archlinux.png "arch logo")Arch via AUR Package: https://aur.archlinux.org/packages/profile-cleaner
 * ![logo](http://s18.postimg.org/w5jvz71mt/chakra.jpg "chakra logo")Chakra: in the [CCR](http://chakraos.org/ccr/packages.php?ID=4501)
 * ![logo](http://freedos-32.sourceforge.net/lean/debian_logo.png "debian logo")Debian: See instruction below
@@ -30,7 +30,7 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 * ![logo](http://s23.postimg.org/5pabe2o5z/void_logo_transparent.png "void logo")Void: in the Void [repos](https://github.com/xtraeme/xbps-packages/tree/master/srcpkgs/profile-cleaner)
 
 
-###Debian Users
+### Debian Users
 To add the PPA (personal package archive) to your Debian (tested on squeeze) system, and to install psd, do the following as the root user:
 
     echo "deb http://ppa.launchpad.net/graysky/utils/ubuntu quantal main" > /etc/apt/sources.list.d/graysky.list
@@ -39,27 +39,27 @@ To add the PPA (personal package archive) to your Debian (tested on squeeze) sys
     apt-get update
     apt-get install profile-cleaner
 
-###Gentoo Users
+### Gentoo Users
 To add the overlay to your Gentoo system:
 
     layman -a laurentb
     emerge profile-cleaner
 
-###Mint Users
+### Mint Users
 To add the PPA (personal package archive) to your Mint system (tested on 14.1), and to install psd:
 
     sudo add-apt-repository ppa:graysky/utils
     sudo apt-get update
     sudo apt-get install profile-cleaner
 
-###Ubuntu Users
+### Ubuntu Users
 To add the PPA (personal package archive) to your Ubuntu (packages available for Lucid and newer) system, and to install psd:
 
     sudo add-apt-repository ppa:graysky/utils
     sudo apt-get update
     sudo apt-get install profile-cleaner
 
-###Other Distros
+### Other Distros
 If you are interested in packaging psd for your favorite distro, please contact me.
 
 ## Dependencies
