@@ -40,10 +40,9 @@ To add the PPA (personal package archive) to your Debian (tested on squeeze) sys
     apt-get install profile-cleaner
 
 ### Gentoo Users
-To add the overlay to your Gentoo system:
+Profile cleaner is in the main repo:
 
-    layman -a laurentb
-    emerge profile-cleaner
+    emerge -av app-admin/profile-cleaner
 
 ### Mint Users
 To add the PPA (personal package archive) to your Mint system (tested on 14.1), and to install psd:
