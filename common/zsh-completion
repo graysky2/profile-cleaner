@@ -4,6 +4,7 @@ _pc() {
 	local -a options
 
 	options=('c:Chromium (stable, beta, and dev)'
+	'fa:Falkon'
 	'f:Firefox (stable and beta)'
 	'gc:Google-Chrome (stable, beta, and dev)'
 	'o:Opera (stable, next, and developer)'
