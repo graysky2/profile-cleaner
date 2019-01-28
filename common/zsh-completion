@@ -20,6 +20,7 @@ _pc() {
 	's:Seamonkey'
 	't:Thunderbird'
 	'to:TOrbrowser'
+	'b:Brave'
 	'p:Paths')
 
 	_describe 'options' options

@@ -3,6 +3,7 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 
 ## Supported Browsers
 * Aurora
+* Brave (https://aur.archlinux.org/packages/brave-bin)
 * Chromium (stable, beta, and dev)
 * Conkeror
 * Falkon
