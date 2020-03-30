@@ -20,7 +20,7 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 * Tor-browser
 
 ## Packages by Distro
-* ![logo](http://www.monitorix.org/imgs/archlinux.png "arch logo")Arch via AUR Package: https://aur.archlinux.org/packages/profile-cleaner
+* ![logo](http://www.monitorix.org/imgs/archlinux.png "arch logo")Arch via the official package in [community]
 * ![logo](http://s18.postimg.org/w5jvz71mt/chakra.jpg "chakra logo")Chakra: in the [CCR](http://chakraos.org/ccr/packages.php?ID=4501)
 * ![logo](http://freedos-32.sourceforge.net/lean/debian_logo.png "debian logo")Debian: See instruction below
 * ![logo](http://i.imgur.com/ooVjgFG.png "gentoo logo")Gentoo: See instructions below
