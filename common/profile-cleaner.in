@@ -1,13 +1,13 @@
 #!/bin/bash
-VERS="@VERSION@"
 #
 # $XDG_CONFIG_HOME should be mapped to $HOME/.config
 # $XDG_DATA_HOME should be mapped to $HOME/.local/share
 # some users may have modified it to a custom location so honor that
 #
 
-# shellcheck disable=1090
+# shellcheck disable=1090,2034
 
+VERS="@VERSION@"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
@@ -20,15 +20,16 @@ config="$XDG_CONFIG_HOME/profile-cleaner.conf"
 if [[ -f "$config" ]]; then
   . "$config"
 else
-  echo "#" > "$config"
-  echo "# $HOME/.config/profile-cleaner.conf" >> "$config"
-  echo "#" >> "$config"
-  echo >> "$config"
-  echo "# Define the background of your terminal theme here." >> "$config"
-  echo "# A setting of "dark" will produce colors that nicely contrast a dark background." >> "$config"
-  echo "# A setting of "light" will produce colors that nicely contrast a light background." >> "$config"
-  echo "COLORS=dark" >> "$config"
-  echo "#COLORS=light" >> "$config"
+  {
+    echo #
+    echo # $HOME/.config/profile-cleaner.conf
+    echo #
+    echo
+    echo # Define the background of your terminal theme here.
+    echo # A setting of "dark" will produce colors that nicely contrast a dark background.
+    echo # A setting of "light" will produce colors that nicely contrast a light background.
+    echo COLORS=dark
+  } >> "$config"
 fi
 
 #
@@ -154,7 +155,7 @@ do_xulbased() {
       finalArr[index]="$profilepath/$line"
     fi
     index=$index+1
-  done < <(grep '[P,p]'ath "$profilepath/profiles.ini" | sed -e 's/[P,p]ath=//' -e 's/\r//' )
+  done < <(grep '[Pp]'ath= "$profilepath/profiles.ini" | sed -e 's/[Pp]ath=//' -e 's/\r//' )
 
   echo -e " ${YLW}Cleaning profile for $name${NRM}"
   find_dbs "${finalArr[@]}"
