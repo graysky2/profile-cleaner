@@ -6,6 +6,8 @@ VERS="@VERSION@"
 # some users may have modified it to a custom location so honor that
 #
 
+# shellcheck disable=1090
+
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
@@ -104,13 +106,16 @@ find_dbs() {
   done < <( find -L "$@" -maxdepth 2 -type f -not -name '*.sqlite-wal' -print0 2>/dev/null | xargs -0 file -e ascii | sed -n -e "s/:.*SQLite.*//p" )
 }
 
-do_chromebased() {
-  [[ -h "$prepath" ]] && profilepath=$(readlink "$prepath") ||
-    profilepath="$prepath"
+do_error_for_chromebased() {
   if [[ ! -d "$profilepath" ]]; then
     echo -e "${RED}Error: no profile directory for $name found.${NRM}"
     exit 1
   fi
+}
+
+do_chromebased() {
+  [[ -h "$prepath" ]] && profilepath=$(readlink "$prepath") ||
+    profilepath="$prepath"
   echo -e " ${YLW}Cleaning profile for $name${NRM}"
   find_dbs "$profilepath"
   do_clean_parallel
@@ -187,17 +192,15 @@ dep_check
 GREP_OPTIONS=
 
 case "$1" in
-  H|h)
-    name="aurora"; export name
-    prepath=$HOME/.mozilla/aurora
-    do_xulbased
-    exit 0
-    ;;
   B|b)
      for name in BraveSoftware Brave-Browser; do
       export name
       prepath="$XDG_CONFIG_HOME"/$name
-      [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
+      if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
+        do_chromebased
+      else
+        do_error_for_chromebased
+      fi
     done
     exit 0
     ;;
@@ -205,8 +208,64 @@ case "$1" in
     for name in chromium chromium-beta chromium-dev; do
       export name
       prepath="$XDG_CONFIG_HOME"/$name
-      [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
+      if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
+        do_chromebased
+      else
+        do_error_for_chromebased
+      fi
     done
+    exit 0
+    ;;
+  GC|gc|GCB|gcb|GCD|gcd|GCU|gcu)
+    for name in google-chrome google-chrome-beta google-chrome-unstable; do
+      export name
+      prepath="$XDG_CONFIG_HOME"/$name
+      if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
+        do_chromebased
+      else
+        do_error_for_chromebased
+      fi
+    done
+    exit 0
+    ;;
+  ix|IX)
+    name="inox"; export name
+    prepath="$XDG_CONFIG_HOME"/$name
+      if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
+        do_chromebased
+      else
+        do_error_for_chromebased
+      fi
+    exit 0
+    ;;
+  o|O|on|ON|od|OD|ob|OB)
+    for name in opera opera-next opera-developer opera-beta; do
+      export name
+      prepath="$XDG_CONFIG_HOME"/$name
+      if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
+        do_chromebased
+      else
+        do_error_for_chromebased
+      fi
+    done
+    exit 0
+    ;;
+  V|v)
+    for name in vivaldi vivaldi-snapshot; do
+      export name
+      prepath="$XDG_CONFIG_HOME"/$name
+      if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
+        do_chromebased
+      else
+        do_error_for_chromebased
+      fi
+    done
+    exit 0
+    ;;
+  H|h)
+    name="aurora"; export name
+    prepath=$HOME/.mozilla/aurora
+    do_xulbased
     exit 0
     ;;
   CK|ck)
@@ -227,14 +286,6 @@ case "$1" in
     do_dbbased
     exit 0
     ;;
-  GC|gc|GCB|gcb|GCD|gcd|GCU|gcu)
-    for name in google-chrome google-chrome-beta google-chrome-unstable; do
-      export name
-      prepath="$XDG_CONFIG_HOME"/$name
-      [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
-    done
-    exit 0
-    ;;
   I|i)
     name="icecat"; export name
     prepath=$HOME/.mozilla/$name
@@ -245,12 +296,6 @@ case "$1" in
     name="icedove"; export name
     prepath=$HOME/.$name
     do_xulbased
-    exit 0
-    ;;
-  ix|IX)
-    name="inox"; export name
-    prepath="$XDG_CONFIG_HOME"/$name
-    [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
     exit 0
     ;;
   M|m)
@@ -269,14 +314,6 @@ case "$1" in
 
     [[ ! -d "$prepath" ]] && prepath="$HOME/.$name"
     do_dbbased
-    exit 0
-    ;;
-  o|O|on|ON|od|OD|ob|OB)
-    for name in opera opera-next opera-developer opera-beta; do
-      export name
-      prepath="$XDG_CONFIG_HOME"/$name
-      [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
-    done
     exit 0
     ;;
   PM|pm)
@@ -324,14 +361,6 @@ case "$1" in
         prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
     done
     do_dbbased
-    exit 0
-    ;;
-  V|v)
-    for name in vivaldi vivaldi-snapshot; do
-      export name
-      prepath="$XDG_CONFIG_HOME"/$name
-      [[ -d "$XDG_CONFIG_HOME"/$name ]] && do_chromebased
-    done
     exit 0
     ;;
   *)
