@@ -82,7 +82,7 @@ find_dbs() {
 
 do_error_for_chromebased() {
   if [[ ! -d "$profilepath" ]]; then
-    echo -e "${RED}Error: no profile directory for $name found.${NRM}"
+    echo -e "${RED}Error: no profile directory found for:${NRM}${BLD}" "${missingArr[@]}" "${NRM}"
     exit 1
   fi
 }
@@ -98,6 +98,7 @@ do_chromebased() {
   do_clean_parallel
   echo
   echo -e " ${BLD}Profile(s) for $name reduced by ${YLW}${cleanedsize}${NRM} ${BLD}Mbytes.${NRM}"
+  echo
 }
 
 do_xulbased() {
@@ -172,39 +173,61 @@ GREP_OPTIONS=
 
 case "$1" in
   B|b)
-    for name in BraveSoftware Brave-Browser; do
-      export name
-      prepath="$XDG_CONFIG_HOME"/$name
-      if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-        do_chromebased
+    for name in Brave-Browser Brave-Browser-Dev Brave-Browser-Beta Brave-Browser-Nightly; do
+      if [[ -d "$XDG_CONFIG_HOME"/BraveSoftware/$name ]]; then
+        tocleanArr+=("$name")
       else
-        do_error_for_chromebased
+        missingArr+=("$name")
       fi
     done
+    if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
+      do_error_for_chromebased
+    else
+      for name in "${tocleanArr[@]}"; do
+        export name
+        prepath="$XDG_CONFIG_HOME"/BraveSoftware/$name
+        do_chromebased
+      done
+    fi
     exit 0
     ;;
+
   C|c|CB|cb|CD|cd)
     for name in chromium chromium-beta chromium-dev; do
-      export name
-      prepath="$XDG_CONFIG_HOME"/$name
       if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-        do_chromebased
+        tocleanArr+=("$name")
       else
-        do_error_for_chromebased
+        missingArr+=("$name")
       fi
     done
+    if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
+      do_error_for_chromebased
+    else
+      for name in "${tocleanArr[@]}"; do
+        export name
+        prepath="$XDG_CONFIG_HOME"/$name
+        do_chromebased
+      done
+    fi
     exit 0
     ;;
   GC|gc|GCB|gcb|GCD|gcd|GCU|gcu)
     for name in google-chrome google-chrome-beta google-chrome-unstable; do
-      export name
-      prepath="$XDG_CONFIG_HOME"/$name
       if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-        do_chromebased
+        tocleanArr+=("$name")
       else
-        do_error_for_chromebased
+        missingArr+=("$name")
       fi
     done
+    if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
+      do_error_for_chromebased
+    else
+      for name in "${tocleanArr[@]}"; do
+        export name
+        prepath="$XDG_CONFIG_HOME"/$name
+        do_chromebased
+      done
+    fi
     exit 0
     ;;
   ix|IX)
@@ -219,26 +242,40 @@ case "$1" in
     ;;
   o|O|on|ON|od|OD|ob|OB)
     for name in opera opera-next opera-developer opera-beta; do
-      export name
-      prepath="$XDG_CONFIG_HOME"/$name
       if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-        do_chromebased
+        tocleanArr+=("$name")
       else
-        do_error_for_chromebased
+        missingArr+=("$name")
       fi
     done
+    if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
+      do_error_for_chromebased
+    else
+      for name in "${tocleanArr[@]}"; do
+        export name
+        prepath="$XDG_CONFIG_HOME"/$name
+        do_chromebased
+      done
+    fi
     exit 0
     ;;
   V|v)
     for name in vivaldi vivaldi-snapshot; do
-      export name
-      prepath="$XDG_CONFIG_HOME"/$name
       if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-        do_chromebased
+        tocleanArr+=("$name")
       else
-        do_error_for_chromebased
+        missingArr+=("$name")
       fi
     done
+    if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
+      do_error_for_chromebased
+    else
+      for name in "${tocleanArr[@]}"; do
+        export name
+        prepath="$XDG_CONFIG_HOME"/$name
+        do_chromebased
+      done
+    fi
     exit 0
     ;;
   H|h)
@@ -331,7 +368,7 @@ case "$1" in
     *)
       echo -e " ${BLD}$0 ${NRM}${GRN}{browser abbreviation}${NRM}"
       echo
-      echo -e "   ${BLD}b) ${GRN}b${NRM}${BLD}rave${NRM}"
+      echo -e "   ${BLD}b) ${GRN}b${NRM}${BLD}rave (stable, beta, dev and nightly)${NRM}"
       echo -e "   ${BLD}c) ${GRN}c${NRM}${BLD}hromium (stable, beta, and dev)${NRM}"
       echo -e "   ${BLD}f) ${GRN}f${NRM}${BLD}irefox (stable and beta)${NRM}"
       echo -e "  ${BLD}fa) ${GRN}fa${NRM}${BLD}lkon${NRM}"
