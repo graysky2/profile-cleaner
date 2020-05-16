@@ -45,7 +45,7 @@ echo
 dep_check() {
   for dep in bc find parallel sqlite3 xargs; do
     if ! command -v "$dep" > /dev/null 2>&1; then
-      echo "I require bc but it's not installed. Aborting." >&2
+      echo "I require $dep but it's not installed. Aborting." >&2
       exit 1
     fi
   done
@@ -280,15 +280,6 @@ case "$1" in
   M|m)
     name="midori"; export name
     prepath="$XDG_CONFIG_HOME"/$name
-    do_dbbased
-    exit 0
-    ;;
-  N|n)
-    name="newsbeuter"; export name
-    prepath="$XDG_DATA_HOME/$name"
-
-    # gentoo uses a path for the db that differs from Arch so try both
-    [[ ! -d "$prepath" ]] && prepath="$HOME/.$name"
     do_dbbased
     exit 0
     ;;
