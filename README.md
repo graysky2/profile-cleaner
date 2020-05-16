@@ -19,6 +19,7 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 * Seamonkey
 * Thunderbird
 * Tor-browser
+* Vivaldi (stable and snapshot)
 
 ## Packages by Distro
 * ![logo](http://www.monitorix.org/imgs/archlinux.png "arch logo")Arch via the official package in [community]

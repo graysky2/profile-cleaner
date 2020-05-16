@@ -3,25 +3,28 @@
 _pc() {
 	local -a options
 
-	options=('c:Chromium (stable, beta, and dev)'
-	'fa:Falkon'
-	'f:Firefox (stable and beta)'
-	'gc:Google-Chrome (stable, beta, and dev)'
-	'o:Opera (stable, next, and developer)'
-	'ck:ConKeror'
-	'h:Heftigs aurora'
-	'i:Icecat'
-	'id:IceDove'
-	'ix:InoX'
-	'm:Midori'
-	'n:Newsbeuter'
-	'pm:PaleMoon'
-	'q:QupZilla'
-	's:Seamonkey'
-	't:Thunderbird'
-	'to:TOrbrowser'
-	'b:Brave'
-	'p:Paths')
+	options=(
+		'b:Brave'
+		'c:Chromium (stable, beta, and dev)'
+		'ck:ConKeror'
+		'f:Firefox (stable and beta)'
+		'fa:Falkon'
+		'gc:Google-Chrome (stable, beta, and dev)'
+		'h:Heftigs aurora'
+		'i:Icecat'
+		'id:IceDove'
+		'ix:InoX'
+		'm:Midori'
+		'n:Newsbeuter'
+		'o:Opera (stable, next, and developer)'
+		'pm:PaleMoon'
+		'q:QupZilla'
+		's:Seamonkey'
+		't:Thunderbird'
+		'to:TOrbrowser'
+		'p:Paths'
+		'v:Vivaldi (stable and snapshot)'
+	)
 
 	_describe 'options' options
 }
