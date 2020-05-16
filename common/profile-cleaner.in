@@ -1,15 +1,14 @@
 #!/bin/bash
 #
+# shellcheck disable=1090,2034
+#
 # $XDG_CONFIG_HOME should be mapped to $HOME/.config
 # $XDG_DATA_HOME should be mapped to $HOME/.local/share
 # some users may have modified it to a custom location so honor that
-#
 
-# shellcheck disable=1090,2034
-
-VERS="@VERSION@"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+VERS="@VERSION@"
 
 #
 # read in config file
@@ -32,46 +31,24 @@ else
   } >> "$config"
 fi
 
-#
-# if users screws up syntax, default to dark
-#
-
 [[ -z "$COLORS" ]] && COLORS="dark"
-[[ "$COLORS" = "dark" ]] && export BLD="\e[01m" \
-  RED="\e[01;31m" \
-  GRN="\e[01;32m" \
-  YLW="\e[01;33m" \
-  NRM="\e[00m"
-[[ "$COLORS" = "light" ]] && export BLD="\e[01m" \
-  RED="\e[00;31m" \
-  GRN="\e[00;32m" \
-  YLW="\e[00;34m" \
-  NRM="\e[00m"
+
+if [[ "$COLORS" = "dark" ]]; then
+  export BLD="\e[01m" RED="\e[01;31m" GRN="\e[01;32m" YLW="\e[01;33m" NRM="\e[00m"
+elif [[ "$COLORS" = "light" ]]; then
+  export BLD="\e[01m" RED="\e[00;31m" GRN="\e[00;32m" YLW="\e[00;34m" NRM="\e[00m"
+fi
 
 echo -e "${BLD}profile-cleaner v$VERS${NRM}"
 echo
 
 dep_check() {
-  #
-  # Although the package manager should handle these deps
-  # this function is a sanity check for users.
-  #
-
-  command -v bc >/dev/null 2>&1 || {
-  echo "I require bc but it's not installed. Aborting." >&2
-  exit 1; }
-  command -v find >/dev/null 2>&1 || {
-  echo "I require find but it's not installed. Aborting." >&2
-  exit 1; }
-  command -v parallel >/dev/null 2>&1 || {
-  echo "I require parallel but it's not installed. Aborting." >&2
-  exit 1; }
-  command -v sqlite3 >/dev/null 2>&1 || {
-  echo "I require sqlite3 but it's not installed. Aborting." >&2
-  exit 1; }
-  command -v xargs >/dev/null 2>&1 || {
-  echo "I require xargs but it's not installed. Aborting." >&2
-  exit 1; }
+  for dep in bc find parallel sqlite3 xargs; do
+    if ! command -v "$dep" > /dev/null 2>&1; then
+      echo "I require bc but it's not installed. Aborting." >&2
+      exit 1
+    fi
+  done
 }
 
 do_clean() {
@@ -97,10 +74,6 @@ do_clean_parallel () {
 }
 
 find_dbs() {
-  #
-  # fill to clean array by looking for SQLite files in each input directory
-  #
-
   toclean=()
   while read -r i; do
     toclean+=("${i}")
@@ -115,8 +88,11 @@ do_error_for_chromebased() {
 }
 
 do_chromebased() {
-  [[ -h "$prepath" ]] && profilepath=$(readlink "$prepath") ||
+  if [[ -h "$prepath" ]]; then
+    profilepath=$(readlink "$prepath")
+  else
     profilepath="$prepath"
+  fi
   echo -e " ${YLW}Cleaning profile for $name${NRM}"
   find_dbs "$profilepath"
   do_clean_parallel
@@ -141,11 +117,9 @@ do_xulbased() {
     echo -e "${RED}Error: cannot locate $profilepath/profiles.ini to determine names of profiles for $name.${NRM}" &&
     exit 1
 
-  #
   # build an array correcting for rel and abs paths therein
   # while read -r will read line-by-line and will tolerate spaces
   # whereas a for loop will not
-  #
 
   index=0
   while read -r line; do
@@ -165,11 +139,15 @@ do_xulbased() {
 }
 
 do_dbbased() {
-  [[ -h "$prepath" ]] &&
-    profilepath=$(readlink "$prepath") || profilepath="$prepath"
-  [[ ! -d "$profilepath" ]] &&
+  if [[ -h "$prepath" ]]; then
+    profilepath=$(readlink "$prepath")
+  else
+    profilepath="$prepath"
+  fi
+  if [[ ! -d "$profilepath" ]]; then
     echo -e "${RED}Error: no profile directory for $name found.${NRM}" &&
-    exit 1
+      exit 1
+  fi
   echo -e " ${YLW}Cleaning profile for $name${NRM}"
   find_dbs "${profilepath}"
   do_clean_parallel
@@ -194,7 +172,7 @@ GREP_OPTIONS=
 
 case "$1" in
   B|b)
-     for name in BraveSoftware Brave-Browser; do
+    for name in BraveSoftware Brave-Browser; do
       export name
       prepath="$XDG_CONFIG_HOME"/$name
       if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
@@ -232,11 +210,11 @@ case "$1" in
   ix|IX)
     name="inox"; export name
     prepath="$XDG_CONFIG_HOME"/$name
-      if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-        do_chromebased
-      else
-        do_error_for_chromebased
-      fi
+    if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
+      do_chromebased
+    else
+      do_error_for_chromebased
+    fi
     exit 0
     ;;
   o|O|on|ON|od|OD|ob|OB)
@@ -309,10 +287,7 @@ case "$1" in
     name="newsbeuter"; export name
     prepath="$XDG_DATA_HOME/$name"
 
-    #
     # gentoo uses a path for the db that differs from Arch so try both
-    #
-
     [[ ! -d "$prepath" ]] && prepath="$HOME/.$name"
     do_dbbased
     exit 0
@@ -351,46 +326,44 @@ case "$1" in
     name="torbrowser"; export name
     prepath=$HOME/.$name/profile
 
-    #
     # AUR packages for tor-browser customize this for some reason so check for
     # all in a silly for loop this is a shitty solution if users have more than
     # 1 language of tor-browser installed
-    #
 
     for lang in de en es fr it ru; do
       [[ ! -d "$prepath" ]] &&
         prepath="$HOME/.tor-browser-$lang/INSTALL/Data/profile"
-    done
-    do_dbbased
-    exit 0
-    ;;
-  *)
-    echo -e " ${BLD}$0 ${NRM}${GRN}{browser abbreviation}${NRM}"
-    echo
-    echo -e "   ${BLD}b) ${GRN}b${NRM}${BLD}rave${NRM}"
-    echo -e "   ${BLD}c) ${GRN}c${NRM}${BLD}hromium (stable, beta, and dev)${NRM}"
-    echo -e "   ${BLD}f) ${GRN}f${NRM}${BLD}irefox (stable and beta)${NRM}"
-    echo -e "  ${BLD}fa) ${GRN}fa${NRM}${BLD}lkon${NRM}"
-    echo -e "  ${BLD}gc) ${GRN}g${NRM}${BLD}oogle-${GRN}c${NRM}${BLD}hrome (stable, beta, and dev)${NRM}"
-    echo -e "   ${BLD}o) ${GRN}o${NRM}${BLD}pera (stable, next, and developer)${NRM}"
-    echo
-    echo -e "  ${BLD}ck) ${GRN}c${NRM}${BLD}on${GRN}k${NRM}${BLD}eror${NRM}"
-    echo -e "   ${BLD}h) ${GRN}h${NRM}${BLD}eftig's aurora${NRM}"
-    echo -e "   ${BLD}i) ${GRN}i${NRM}${BLD}cecat${NRM}"
-    echo -e "  ${BLD}id) ${GRN}i${NRM}${BLD}ce${GRN}d${NRM}${BLD}ove${NRM}"
-    echo -e "  ${BLD}ix) ${GRN}i${NRM}${BLD}no${GRN}x${NRM}"
-    echo -e "   ${BLD}m) ${GRN}m${NRM}${BLD}idori${NRM}"
-    echo -e "   ${BLD}n) ${GRN}n${NRM}${BLD}ewsbeuter${NRM}"
-    echo -e "  ${BLD}pm) ${GRN}p${NRM}${BLD}ale${GRN}m${NRM}${BLD}oon${NRM}"
-    echo -e "   ${BLD}q) ${GRN}q${NRM}${BLD}upZilla${NRM}"
-    echo -e "   ${BLD}s) ${GRN}s${NRM}${BLD}eamonkey${NRM}"
-    echo -e "   ${BLD}t) ${GRN}t${NRM}${BLD}hunderbird${NRM}"
-    echo -e "  ${BLD}to) ${GRN}to${NRM}${BLD}rbrowser${NRM}"
-    echo -e "   ${BLD}v) ${GRN}v${NRM}${BLD}ivaldi (stable and snapshot)${NRM}"
-    echo
-    echo -e "   ${BLD}p) ${GRN}p${NRM}${BLD}aths${NRM}"
-    exit 0
-    ;;
-esac
+      done
+      do_dbbased
+      exit 0
+      ;;
+    *)
+      echo -e " ${BLD}$0 ${NRM}${GRN}{browser abbreviation}${NRM}"
+      echo
+      echo -e "   ${BLD}b) ${GRN}b${NRM}${BLD}rave${NRM}"
+      echo -e "   ${BLD}c) ${GRN}c${NRM}${BLD}hromium (stable, beta, and dev)${NRM}"
+      echo -e "   ${BLD}f) ${GRN}f${NRM}${BLD}irefox (stable and beta)${NRM}"
+      echo -e "  ${BLD}fa) ${GRN}fa${NRM}${BLD}lkon${NRM}"
+      echo -e "  ${BLD}gc) ${GRN}g${NRM}${BLD}oogle-${GRN}c${NRM}${BLD}hrome (stable, beta, and dev)${NRM}"
+      echo -e "   ${BLD}o) ${GRN}o${NRM}${BLD}pera (stable, next, and developer)${NRM}"
+      echo
+      echo -e "  ${BLD}ck) ${GRN}c${NRM}${BLD}on${GRN}k${NRM}${BLD}eror${NRM}"
+      echo -e "   ${BLD}h) ${GRN}h${NRM}${BLD}eftig's aurora${NRM}"
+      echo -e "   ${BLD}i) ${GRN}i${NRM}${BLD}cecat${NRM}"
+      echo -e "  ${BLD}id) ${GRN}i${NRM}${BLD}ce${GRN}d${NRM}${BLD}ove${NRM}"
+      echo -e "  ${BLD}ix) ${GRN}i${NRM}${BLD}no${GRN}x${NRM}"
+      echo -e "   ${BLD}m) ${GRN}m${NRM}${BLD}idori${NRM}"
+      echo -e "   ${BLD}n) ${GRN}n${NRM}${BLD}ewsbeuter${NRM}"
+      echo -e "  ${BLD}pm) ${GRN}p${NRM}${BLD}ale${GRN}m${NRM}${BLD}oon${NRM}"
+      echo -e "   ${BLD}q) ${GRN}q${NRM}${BLD}upZilla${NRM}"
+      echo -e "   ${BLD}s) ${GRN}s${NRM}${BLD}eamonkey${NRM}"
+      echo -e "   ${BLD}t) ${GRN}t${NRM}${BLD}hunderbird${NRM}"
+      echo -e "  ${BLD}to) ${GRN}to${NRM}${BLD}rbrowser${NRM}"
+      echo -e "   ${BLD}v) ${GRN}v${NRM}${BLD}ivaldi (stable and snapshot)${NRM}"
+      echo
+      echo -e "   ${BLD}p) ${GRN}p${NRM}${BLD}aths${NRM}"
+      exit 0
+      ;;
+  esac
 
 # vim:set ts=2 sw=2 et:
