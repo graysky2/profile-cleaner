@@ -23,7 +23,7 @@ install-bin:
 install-man:
 	@echo -e '\033[1;32mInstalling manpage...\033[0m'
 	install -Dm644 doc/pc.1 "$(DESTDIR)$(MANDIR)/pc.1"
-	gzip -9 "$(DESTDIR)$(MANDIR)/pc.1"
+	gzip -n -9 "$(DESTDIR)$(MANDIR)/pc.1"
 	ln -s pc.1.gz "$(DESTDIR)$(MANDIR)/$(PN).1.gz"
 
 uninstall:
