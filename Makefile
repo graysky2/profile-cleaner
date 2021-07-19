@@ -1,4 +1,4 @@
-VERSION = 2.41
+VERSION = 2.42
 PN = profile-cleaner
 
 PREFIX ?= /usr
@@ -23,14 +23,10 @@ install-bin:
 install-man:
 	@echo -e '\033[1;32mInstalling manpage...\033[0m'
 	install -Dm644 doc/pc.1 "$(DESTDIR)$(MANDIR)/pc.1"
-	gzip -9 "$(DESTDIR)$(MANDIR)/pc.1"
-	ln -s pc.1.gz "$(DESTDIR)$(MANDIR)/$(PN).1.gz"
 
 uninstall:
 	$(RM) "$(DESTDIR)$(BINDIR)/$(PN)"
 	$(RM) "$(DESTDIR)$(BINDIR)/pc"
-	$(RM) "$(DESTDIR)$(MANDIR)/$(PN).1.gz"
-	$(RM) "$(DESTDIR)$(MANDIR)/pc.1.gz"
 	$(RM) "$(DESTDIR)/$(ZSHDIR)/_pc"
 
 install: install-bin install-man
