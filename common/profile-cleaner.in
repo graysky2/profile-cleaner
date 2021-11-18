@@ -19,16 +19,17 @@ config="$XDG_CONFIG_HOME/profile-cleaner.conf"
 if [[ -f "$config" ]]; then
   . "$config"
 else
-  {
-    echo #
-    echo # $HOME/.config/profile-cleaner.conf
-    echo #
-    echo
-    echo # Define the background of your terminal theme here.
-    echo # A setting of "dark" will produce colors that nicely contrast a dark background.
-    echo # A setting of "light" will produce colors that nicely contrast a light background.
-    echo COLORS=dark
-  } >> "$config"
+  cat <<END >> "$config"
+#
+# $HOME/.config/profile-cleaner.conf
+#
+
+# Define the background of your terminal theme here.
+# A setting of dark will produce colors that nicely contrast a dark background.
+#  setting of light will produce colors that nicely contrast a light background.
+COLORS=dark
+#COLORS=light
+END
 fi
 
 [[ -z "$COLORS" ]] && COLORS="dark"
