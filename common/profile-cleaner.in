@@ -192,7 +192,6 @@ case "$1" in
     fi
     exit 0
     ;;
-
   C|c|CB|cb|CD|cd)
     for name in chromium chromium-beta chromium-dev; do
       if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
@@ -201,6 +200,24 @@ case "$1" in
         missingArr+=("$name")
       fi
     done
+    if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
+      do_error_for_chromebased
+    else
+      for name in "${tocleanArr[@]}"; do
+        export name
+        prepath="$XDG_CONFIG_HOME"/$name
+        do_chromebased
+      done
+    fi
+    exit 0
+    ;;
+  E|e)
+    name=microsoft-edge
+    if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
+      tocleanArr+=("$name")
+    else
+      missingArr+=("$name")
+    fi
     if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
       do_error_for_chromebased
     else
@@ -381,6 +398,7 @@ case "$1" in
       echo
       echo -e "   ${BLD}b) ${GRN}b${NRM}${BLD}rave (stable, beta, dev and nightly)${NRM}"
       echo -e "   ${BLD}c) ${GRN}c${NRM}${BLD}hromium (stable, beta, and dev)${NRM}"
+      echo -e "   ${BLD}e) ${GRN}e${NRM}${BLD}dge${NRM}"
       echo -e "   ${BLD}f) ${GRN}f${NRM}${BLD}irefox (stable and beta)${NRM}"
       echo -e "  ${BLD}fa) ${GRN}fa${NRM}${BLD}lkon${NRM}"
       echo -e "  ${BLD}gc) ${GRN}g${NRM}${BLD}oogle-${GRN}c${NRM}${BLD}hrome (stable, beta, and dev)${NRM}"
