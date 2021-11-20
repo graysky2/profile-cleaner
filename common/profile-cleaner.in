@@ -243,10 +243,10 @@ case "$1" in
     ;;
   n|N)
     name="newsboat"; export name
-    if [[ -d "$HOME"/.$name ]]; then
-      prepath="$HOME"/.$name
-    else
+    if [[ -d "$XDG_DATA_HOME"/$name ]]; then
       prepath="$XDG_DATA_HOME"/$name
+    elif [[ -d "$HOME/.$name" ]]; then
+      prepath="$HOME/.$name"
     fi
     do_dbbased
     exit 0
