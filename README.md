@@ -13,6 +13,7 @@ Use profile-cleaner to reduce the size of browser profiles by organizing their s
 * Icecat
 * Icedove
 * Inox (https://bbs.archlinux.org/viewtopic.php?id=198763)
+* Librewolf
 * Midori
 * Newsboat
 * Palemoon

@@ -342,6 +342,12 @@ case "$1" in
     do_xulbased
     exit 0
     ;;
+  L|l)
+    name="librewolf"; export name
+    prepath=$HOME/.$name
+    do_xulbased
+    exit 0
+    ;;
   M|m)
     name="midori"; export name
     prepath="$XDG_CONFIG_HOME"/$name
@@ -409,6 +415,7 @@ case "$1" in
       echo -e "   ${BLD}i) ${GRN}i${NRM}${BLD}cecat${NRM}"
       echo -e "  ${BLD}id) ${GRN}i${NRM}${BLD}ce${GRN}d${NRM}${BLD}ove${NRM}"
       echo -e "  ${BLD}ix) ${GRN}i${NRM}${BLD}no${GRN}x${NRM}"
+      echo -e "   ${BLD}l) ${GRN}l${NRM}${BLD}ibrewolf${NRM}"
       echo -e "   ${BLD}m) ${GRN}m${NRM}${BLD}idori${NRM}"
       echo -e "   ${BLD}n) ${GRN}n${NRM}${BLD}ewsboat${NRM}"
       echo -e "  ${BLD}pm) ${GRN}p${NRM}${BLD}ale${GRN}m${NRM}${BLD}oon${NRM}"
