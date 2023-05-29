@@ -1,0 +1,123 @@
+NAME
+profile-cleaner - Reduce the size of browser and some email program's profiles by organizing their sqlite databases using sqlite3's vacuum and reindex functions. The term "browser" is used loosely since profile-cleaner happily works on some email clients too.
+
+SYNOPSIS
+profile-cleaner [option]
+
+DESCRIPTION
+Profile-cleaner is a very simple shell script that will invoke sqlite3 to vacuum and reindex databases belonging to supported browsers and email clients. It is compatible with profile-sync-daemon so users need not stop psd before calling profile-cleaner. In fact, profiles will clean much faster when they are synced to tmpfs via psd.
+
+OPTIONS
+	b   Clean brave's profile
+
+	c   Clean chromium's profile
+
+	ck  Clean conkeror's profile(s)*
+
+	e   Clean edge's profile
+
+	f   Clean firefox's profile(s)*
+
+	fa  Clean falkon's profile
+
+	gc  Clean google-chrome's profile
+
+	h   Clean heftig aurora's profile(s)*
+
+	i   Clean icecat's profile(s)*
+
+	id  Clean icedove's profile
+
+	ix  Clean Inox's profile
+
+	l   Clean Librewolf's profile
+
+	m   Clean midori's profile
+
+	o   Clean opera's profile
+
+	t   Clean thunderbird's profile(s)*
+
+	to  Clean tor-browser's profile
+
+	s   Clean seamonkey's profile(s)*
+
+	pm  Clean palemoon's profile(s)*
+
+	p   Clean the defined paths
+
+	v   Clean vivaldi's profile
+
+
+*Profile-cleaner will parse the respective profiles.ini file and clean all profiles defined therein.
+
+CONFIG FILE
+Profile-cleaner will create $HOME/.config/profile-cleaner.conf the first time it is invoked. Users may define a color scheme therein based on their terminal background color. The default is a dark scheme for dark colored terminals. The file is commented and self-explanatory.
+
+EXAMPLES
+Clean all firefox profiles:
+
+
+ $ profile-cleaner f
+
+Clean chromium profile:
+
+
+ $ profile-cleaner c
+
+Clean the user defined profile:
+
+
+ $ profile-cleaner p /path/to/profile
+
+SUPPORTED BROWSERS AND EMAIL CLIENTS
+	Currently, the following are supported:
+	o Brave (stable, beta, dev and nightly)
+	o Chromium (stable,beta,dev)
+	o Conkeror
+	o Edge
+	o Firefox (stable,beta,aurora)
+	o Google-chrome (stable,beta,dev)
+	o Heftig's version of Aurora (https://bbs.archlinux.org/viewtopic.php?id=117157)
+	o Inox (https://bbs.archlinux.org/viewtopic.php?id=198763)
+	o Midori
+	o Newsbeuter
+	o Opera (stable, next, and developer)
+	o Seamonkey
+	o Thunderbird
+	o Tor-browser
+	o Vivaldi (stable and snapshot)
+
+SAMPLE OUTPUT
+Sample output invoking the firefox option (your mileage will vary).
+
+
+ $ profile-cleaner f
+ /home/facade/.mozilla/firefox/zee52krz.default/cookies.sqlite reduced by .87 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/signons.sqlite reduced by .41 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/downloads.sqlite reduced by .56 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/chromeappsstore.sqlite reduced by .03 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/urlclassifier3.sqlite reduced by 43.10 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/formhistory.sqlite reduced by .11 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/addons.sqlite reduced by 0 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/permissions.sqlite reduced by 0 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/content-prefs.sqlite reduced by 0 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/extensions.sqlite reduced by 0 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/webappsstore.sqlite reduced by 0 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/OfflineCache/index.sqlite reduced by 0 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/search.sqlite reduced by 0 Mbytes
+ /home/facade/.mozilla/firefox/zee52krz.default/places.sqlite reduced by 9.98 Mbytes
+
+ firefox profile reduced by 55.06 Mbytes
+
+CONTRIBUTE
+Should you wish to contribute to this code, please fork and send a pull request. Source is freely available on github: https://github.com/graysky2/profile-cleaner
+
+BUGS
+None known.
+
+AUTHOR
+graysky (therealgraysky AT proton DOT me)
+
+SEE ALSO
+profile-sync-deamon (1)
