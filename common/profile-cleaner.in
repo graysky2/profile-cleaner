@@ -8,6 +8,7 @@
 
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+FLATPAK_PREFIX="${FLATPAK_PREFIX:-$HOME/.var/app}"
 VERS="@VERSION@"
 
 #
@@ -177,131 +178,140 @@ export prepath
 case "$1" in
 B | b)
   flatpak="com.brave.Browser"
-  for name in Brave-Browser Brave-Browser-Dev Brave-Browser-Beta Brave-Browser-Nightly; do
-    if [[ -d "$XDG_CONFIG_HOME"/BraveSoftware/$name ]]; then
-      tocleanArr+=("$name")
-    else
-      missingArr+=("$name")
-    fi
+  for name in BraveSoftware/Brave-Browser BraveSoftware/Brave-Browser-Dev BraveSoftware/Brave-Browser-Beta BraveSoftware/Brave-Browser-Nightly; do
+    for prepath in "${XDG_CONFIG_HOME}/${name}" "${FLATPAK_PREFIX}/${flatpak}/config/${name}"; do
+      if [ -d "$prepath" ]; then
+        tocleanArr+=("$prepath")
+        do_chromebased
+      else
+        missingArr+=("${name}: ${prepath}")
+      fi
+    done
   done
+
   if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
     do_error_for_chromebased
-  else
-    for name in "${tocleanArr[@]}"; do
-      prepath="$XDG_CONFIG_HOME"/BraveSoftware/$name
-      do_chromebased
-    done
   fi
   exit 0
   ;;
 C | c | CB | cb | CD | cd)
   flatpak="org.chromium.Chromium"
   for name in chromium chromium-beta chromium-dev; do
-    if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-      tocleanArr+=("$name")
-    else
-      missingArr+=("$name")
-    fi
+    for prepath in "${XDG_CONFIG_HOME}/${name}" "${FLATPAK_PREFIX}/${flatpak}/config/${name}"; do
+      if [ -d "$prepath" ]; then
+        tocleanArr+=("$prepath")
+        do_chromebased
+      else
+        missingArr+=("${name}: ${prepath}")
+      fi
+    done
   done
+
   if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
     do_error_for_chromebased
-  else
-    for name in "${tocleanArr[@]}"; do
-      prepath="$XDG_CONFIG_HOME"/$name
-      do_chromebased
-    done
   fi
   exit 0
   ;;
 E | e)
-  name=microsoft-edge
-  if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-    tocleanArr+=("$name")
-  else
-    missingArr+=("$name")
-  fi
+  for flatpak in com.microsoft.Edge com.microsoft.EdgeDev; do
+    for name in microsoft-edge microsoft-edge-dev; do
+      for prepath in "${XDG_CONFIG_HOME}/${name}" "${FLATPAK_PREFIX}/${flatpak}/config/${name}"; do
+        if [ -d "$prepath" ]; then
+          tocleanArr+=("$prepath")
+          do_chromebased
+        else
+          missingArr+=("${name}: ${prepath}")
+        fi
+      done
+    done
+  done
+
   if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
     do_error_for_chromebased
-  else
-    for name in "${tocleanArr[@]}"; do
-      prepath="$XDG_CONFIG_HOME"/$name
-      do_chromebased
-    done
   fi
   exit 0
   ;;
 GC | gc | GCB | gcb | GCD | gcd | GCU | gcu)
-  for name in google-chrome google-chrome-beta google-chrome-unstable; do
-    if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-      tocleanArr+=("$name")
-    else
-      missingArr+=("$name")
-    fi
+  for flatpak in com.google.Chrome com.google.ChromeDev; do
+    for name in google-chrome google-chrome-beta google-chrome-unstable; do
+      for prepath in "${XDG_CONFIG_HOME}/${name}" "${FLATPAK_PREFIX}/${flatpak}/config/${name}"; do
+        if [ -d "$prepath" ]; then
+          tocleanArr+=("$prepath")
+          do_chromebased
+        else
+          missingArr+=("${name}: ${prepath}")
+        fi
+      done
+    done
   done
+
   if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
     do_error_for_chromebased
-  else
-    for name in "${tocleanArr[@]}"; do
-      prepath="$XDG_CONFIG_HOME"/$name
-      do_chromebased
-    done
   fi
   exit 0
   ;;
 ix | IX)
   name="inox"
   prepath="${XDG_CONFIG_HOME}/inox"
-  if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
+  if [ -d "$prepath" ]; then
+    tocleanArr+=("$prepath")
     do_chromebased
   else
+    missingArr+=("${name}: ${prepath}")
+  fi
+
+  if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
     do_error_for_chromebased
   fi
   exit 0
   ;;
 n | N)
   name="newsboat"
-  if [[ -d "$XDG_DATA_HOME"/$name ]]; then
-    prepath="$XDG_DATA_HOME"/$name
-  elif [[ -d "$HOME/.$name" ]]; then
-    prepath="$HOME/.$name"
+  for prepath in "${XDG_DATA_HOME}/newsboat" "${HOME}/.newsboat"; do
+    if [ -d "$prepath" ]; then
+      tocleanArr+=("$prepath")
+      do_dbbased
+    else
+      missingArr+=("${name}: ${prepath}")
+    fi
+  done
+
+  if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
+    do_error_for_chromebased
   fi
-  do_dbbased
   exit 0
   ;;
 o | O | on | ON | od | OD | ob | OB)
   flatpak="com.opera.Opera"
   for name in opera opera-next opera-developer opera-beta; do
-    if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-      tocleanArr+=("$name")
-    else
-      missingArr+=("$name")
-    fi
+    for prepath in "${XDG_CONFIG_HOME}/${name}" "${FLATPAK_PREFIX}/${flatpak}/config/${name}"; do
+      if [ -d "$prepath" ]; then
+        tocleanArr+=("$prepath")
+        do_chromebased
+      else
+        missingArr+=("${name}: ${prepath}")
+      fi
+    done
   done
+
   if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
     do_error_for_chromebased
-  else
-    for name in "${tocleanArr[@]}"; do
-      prepath="$XDG_CONFIG_HOME"/$name
-      do_chromebased
-    done
   fi
   exit 0
   ;;
 V | v)
   for name in vivaldi vivaldi-snapshot; do
-    if [[ -d "$XDG_CONFIG_HOME"/$name ]]; then
-      tocleanArr+=("$name")
+    prepath="${XDG_CONFIG_HOME}/${name}"
+    if [ -d "$prepath" ]; then
+      tocleanArr+=("$prepath")
+      do_chromebased
     else
-      missingArr+=("$name")
+      missingArr+=("${name}: ${prepath}")
     fi
   done
+
   if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
     do_error_for_chromebased
-  else
-    for name in "${tocleanArr[@]}"; do
-      prepath="$XDG_CONFIG_HOME"/$name
-      do_chromebased
-    done
   fi
   exit 0
   ;;
@@ -320,8 +330,18 @@ CK | ck)
 F | f)
   name="firefox"
   flatpak="org.mozilla.firefox"
-  prepath=$HOME/.mozilla/$name
-  do_xulbased
+  for prepath in "${HOME}/.mozilla/${name}" "${FLATPAK_PREFIX}/${flatpak}/.mozilla/${name}"; do
+    if [ -d "$prepath" ]; then
+      tocleanArr+=("$prepath")
+      do_xulbased
+    else
+      missingArr+=("${name}: ${prepath}")
+    fi
+  done
+
+  if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
+    do_error_for_chromebased
+  fi
   exit 0
   ;;
 FA | fa | Fa)
@@ -381,8 +401,18 @@ Q | q)
 T | t)
   name="thunderbird"
   flatpak="org.mozilla.Thunderbird"
-  prepath="${HOME}/.${name}"
-  do_xulbased
+  for prepath in "${HOME}/.mozilla/${name}" "${FLATPAK_PREFIX}/${flatpak}/.mozilla/${name}"; do
+    if [ -d "$prepath" ]; then
+      tocleanArr+=("$prepath")
+      do_xulbased
+    else
+      missingArr+=("${name}: ${prepath}")
+    fi
+  done
+
+  if [[ "${#tocleanArr[@]}" -eq 0 ]]; then
+    do_error_for_chromebased
+  fi
   exit 0
   ;;
 TO | to)
