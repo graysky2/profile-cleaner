@@ -330,6 +330,12 @@ case "$1" in
     do_dbbased
     exit 0
     ;;
+  FL|fl|Fl)
+    name="floorp"; export name
+    prepath=$HOME/.var/app/one.ablaze.floorp/.$name
+    do_xulbased
+    exit 0
+    ;;
   I|i)
     name="icecat"; export name
     prepath=$HOME/.mozilla/$name
@@ -399,6 +405,12 @@ case "$1" in
       do_dbbased
       exit 0
       ;;
+  W|w)
+    name="waterfox"; export name
+    prepath=$HOME/.var/app/net.waterfox.waterfox/.$name
+    do_xulbased
+    exit 0
+    ;;
     *)
       echo -e " ${BLD}$0 ${NRM}${GRN}{browser abbreviation}${NRM}"
       echo
@@ -406,6 +418,7 @@ case "$1" in
       echo -e "   ${BLD}c) ${GRN}c${NRM}${BLD}hromium (stable, beta, and dev)${NRM}"
       echo -e "   ${BLD}e) ${GRN}e${NRM}${BLD}dge${NRM}"
       echo -e "   ${BLD}f) ${GRN}f${NRM}${BLD}irefox (stable and beta)${NRM}"
+      echo -e "  ${BLD}fl) ${GRN}f${NMR}${BLD}loorp (flatpak)${NRM}"
       echo -e "  ${BLD}fa) ${GRN}fa${NRM}${BLD}lkon${NRM}"
       echo -e "  ${BLD}gc) ${GRN}g${NRM}${BLD}oogle-${GRN}c${NRM}${BLD}hrome (stable, beta, and dev)${NRM}"
       echo -e "   ${BLD}o) ${GRN}o${NRM}${BLD}pera (stable, next, and developer)${NRM}"
@@ -424,6 +437,7 @@ case "$1" in
       echo -e "   ${BLD}t) ${GRN}t${NRM}${BLD}hunderbird${NRM}"
       echo -e "  ${BLD}to) ${GRN}to${NRM}${BLD}rbrowser${NRM}"
       echo -e "   ${BLD}v) ${GRN}v${NRM}${BLD}ivaldi (stable and snapshot)${NRM}"
+      echo -e "   ${BLD}w) ${GRN}w${NRM}${BLD}aterfox (flatpak)${NRM}"
       echo
       echo -e "   ${BLD}p) ${GRN}p${NRM}${BLD}aths${NRM}"
       exit 0
