@@ -30,9 +30,10 @@ Consult the man page.
 To build from source, see the included INSTALL text document.
 
 ## Installation from Distro Packages
-* ![logo](http://www.monitorix.org/imgs/archlinux.png "arch logo")Arch via the official package in [community]
+* ![logo](http://www.monitorix.org/imgs/archlinux.png "arch logo")Arch: in official [repo](https://archlinux.org/packages/extra/any/profile-cleaner/)
+* ![logo](https://linux-cdn.softpedia.com/screenshots/ico/Fedora-Games-Spin.gif "fedora logo")Fedora: in official [repo](https://src.fedoraproject.org/rpms/profile-cleaner)
 * ![logo](http://i.imgur.com/ooVjgFG.png "gentoo logo")Gentoo: See instructions below
-* ![logo](https://i.postimg.cc/13Jzxh5C/nix.png "nixos logo")NixOS: in the official repos
+* ![logo](https://i.postimg.cc/13Jzxh5C/nix.png "nixos logo")NixOS: in the official [repo](https://search.nixos.org/packages?query=profile-cleaner)
 * ![logo](http://wiki.codeblocks.org/images/8/8b/Slackware-logo_32.png "slack logo")Slackware: on [slackbuilds](http://slackbuilds.org/apps/profile-cleaner/)
 
 ### Gentoo Users
