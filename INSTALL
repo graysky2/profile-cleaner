@@ -20,14 +20,6 @@ USE A DISTRO PROVIDED PACKAGE
  Arch users may build the package directly with the provided
  PKGBUILD: https://aur.archlinux.org/packages/profile-cleaner
 
- CHAKRA
- Chakra users may build the package directly with the provided
- PKGBUILD: http://chakra-linux.org/ccr/packages.php?ID=4501
-
- DEBIAN/MINT/UBUNTU
- Debian/Mint/Ubuntu users may use the PPA graysky maintains at
- this url: https://launchpad.net/~graysky/+archive/utils
-
  FEDORA
  Fedora users may use the rpms provided by graysky at this url:
  http://repo-ck.com/bench.htm#Fedora_RPMs
