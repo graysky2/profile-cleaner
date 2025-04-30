@@ -24,6 +24,7 @@ _pc() {
 		'to:TOrbrowser'
 		'p:Paths'
 		'v:Vivaldi (stable and snapshot)'
+		'z:Zen (release and twilight)'
 	)
 
 	_describe 'options' options
