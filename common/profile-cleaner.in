@@ -399,6 +399,12 @@ case "$1" in
       do_dbbased
       exit 0
       ;;
+  Z|z)
+    name="zen"; export name
+    prepath=$HOME/.$name
+    do_xulbased
+    exit 0
+    ;;
     *)
       echo -e " ${BLD}$0 ${NRM}${GRN}{browser abbreviation}${NRM}"
       echo
@@ -424,6 +430,7 @@ case "$1" in
       echo -e "   ${BLD}t) ${GRN}t${NRM}${BLD}hunderbird${NRM}"
       echo -e "  ${BLD}to) ${GRN}to${NRM}${BLD}rbrowser${NRM}"
       echo -e "   ${BLD}v) ${GRN}v${NRM}${BLD}ivaldi (stable and snapshot)${NRM}"
+      echo -e "   ${BLD}z) ${GRN}z${NRM}${BLD}en (release and twilight)${NRM}"
       echo
       echo -e "   ${BLD}p) ${GRN}p${NRM}${BLD}aths${NRM}"
       exit 0

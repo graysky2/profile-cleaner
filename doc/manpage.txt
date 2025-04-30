@@ -48,6 +48,8 @@ OPTIONS
 
 	v   Clean vivaldi's profile
 
+	z   Clean zen's profile(s)*
+
 
 *Profile-cleaner will parse the respective profiles.ini file and clean all profiles defined therein.
 
@@ -87,6 +89,7 @@ SUPPORTED BROWSERS AND EMAIL CLIENTS
 	o Thunderbird
 	o Tor-browser
 	o Vivaldi (stable and snapshot)
+	o Zen (release and twilight)
 
 SAMPLE OUTPUT
 Sample output invoking the firefox option (your mileage will vary).
