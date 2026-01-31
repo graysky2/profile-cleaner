@@ -320,13 +320,19 @@ case "$1" in
     ;;
   F|f)
     name="firefox"; export name
+    prepath=$XDG_CONFIG_HOME/mozilla/$name
+    if [[ -d $prepath ]]; then
+      do_xulbased
+    fi
     prepath=$HOME/.mozilla/$name
-    do_xulbased
+    if [[ -d $prepath ]]; then
+      do_xulbased
+    fi
     exit 0
     ;;
   FA|fa|Fa)
     name="falkon"; export name
-    prepath=$HOME/.config/$name/profiles
+    prepath=$XDG_CONFIG_HOME/$name/profiles
     do_dbbased
     exit 0
     ;;
@@ -374,7 +380,7 @@ case "$1" in
     ;;
   Q|q)
     name="qupzilla"; export name
-    prepath=$HOME/.config/$name/profiles
+    prepath=$XDG_CONFIG_HOME/$name/profiles
     do_dbbased
     exit 0
     ;;
